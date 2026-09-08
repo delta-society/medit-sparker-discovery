@@ -56,6 +56,8 @@ def prepare(name, root=None, product=False, linked=False):
     return result
 
 if __name__ == '__main__':
+    from portable import configure_stdio
+    configure_stdio()
     parser = argparse.ArgumentParser()
     parser.add_argument('--example', required=True, choices=NAMES)
     parser.add_argument("--product", action="store_true")

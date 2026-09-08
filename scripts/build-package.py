@@ -3,19 +3,43 @@
 from pathlib import Path
 import argparse,hashlib,json,zipfile
 
+# Exact release inputs: never discover files from a developer's working directory.
+PLUGIN_FILES = (
+    '.claude-plugin/plugin.json', 'skills/plan/SKILL.md', 'skills/submit/SKILL.md',
+    'references/conversation.md', 'references/data-contract.md',
+    'references/implementation-example.md', 'references/objective-linkage.md',
+    'references/kpi-design.md',
+    'scripts/pdf_browser.py', 'scripts/pdf_export.py', 'scripts/pdf_presentation.py',
+    'assets/pdf/render.js', 'assets/pdf/fonts.css', 'assets/pdf/print.css',
+    'assets/pdf/manifest.json', 'assets/pdf/THIRD_PARTY_NOTICES.md',
+    'scripts/plan.py', 'scripts/linkage.py', 'scripts/submission.py',
+    'scripts/example.py', 'scripts/kpi.py', 'scripts/portable.py', 'scripts/camp_submit.py',
+)
+EXAMPLE_FILES = ('README.md', 'product-compliance.md', 'spec-policy.md',
+                 'weekly-report.md', 'standard-time.md')
+
+def release_file(root, relative):
+    path = root
+    for part in Path(relative).parts:
+        path = path / part
+        if path.is_symlink() or getattr(path, 'is_junction', lambda: False)():
+            raise ValueError('linked release path not allowed: ' + str(path))
+    if not path.is_file():
+        raise ValueError('release file missing: ' + str(path))
+    return path
+
 def build(root, output):
     root=Path(root).resolve();output=Path(output).resolve()
-    plugin=root/'plugin'
-    if not (plugin/'.claude-plugin/plugin.json').is_file():raise ValueError('plugin manifest missing')
+    entries={name:release_file(root, 'plugin/'+name) for name in PLUGIN_FILES}
+    entries.update({'examples/'+name:release_file(root, 'examples/'+name) for name in EXAMPLE_FILES})
+    entries['USER-GUIDE.md']=release_file(root, 'docs/plugin-guide.md')
+    if output in entries.values():raise ValueError('output must not replace a release input')
+    # Read only approved files. Untracked notes, .env, practice records and tests
+    # are not inspected or included, even when placed inside scripts/references.
+    contents={name:path.read_bytes() for name,path in entries.items()}
     output.parent.mkdir(parents=True,exist_ok=True)
-    entries={}
-    for p in plugin.rglob('*'):
-        if p.is_symlink():raise ValueError('symlink not packaged: '+str(p))
-        if p.is_file() and not any(x in p.parts for x in ['__pycache__','.pytest_cache']) and p.suffix!='.pyc':entries[str(p.relative_to(plugin)).replace('\\','/')]=p
-    for p in (root/'examples').glob('*.md'):entries['examples/'+p.name]=p
-    entries['USER-GUIDE.md']=root/'docs/plugin-guide.md'
     with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as z:
-        for name,p in sorted(entries.items()):z.writestr(name,p.read_bytes())
+        for name,content in sorted(contents.items()):z.writestr(name,content)
     with zipfile.ZipFile(output) as z:
         assert z.testzip() is None
         assert '.claude-plugin/plugin.json' in z.namelist()

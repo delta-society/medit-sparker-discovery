@@ -36,7 +36,7 @@ class SubmissionTest(unittest.TestCase):
         text = submission.prepare('standard-time')['submission']['text']
         with tempfile.TemporaryDirectory() as d:
             root = Path(d) / 'plugin'; (root / 'examples').mkdir(parents=True)
-            (root / 'examples/standard-time.md').write_text(text)
+            (root / 'examples/standard-time.md').write_text(text, encoding='utf-8')
             self.assertEqual(submission.prepare('standard-time', root)['submission']['text'], text)
 
     def test_other_example_not_st(self):

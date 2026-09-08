@@ -89,7 +89,7 @@ class LinkageTests(unittest.TestCase):
         self.assertEqual(final['status'], 'finalized')
         target = self.base / 'linked.md'
         self.cli('export', 'linked-case', '--output', str(target))
-        md = target.read_text()
+        md = target.read_text(encoding='utf-8')
         for value in ['납기 준수', '원하는 변화 방향', '인과 가설', 'get-link', '권한 범위', 'unknown', '운영 준비 검증이 아닙니다']:
             self.assertIn(value, md)
         self.cli('reopen', 'linked-case', '--expected-revision', '2', '--reason', '합성 수정 요청')

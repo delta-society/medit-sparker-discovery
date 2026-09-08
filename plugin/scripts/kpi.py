@@ -167,6 +167,8 @@ def main():
 
 
 if __name__ == '__main__':
+    from portable import configure_stdio
+    configure_stdio()
     try:
         main()
     except (ValueError, TypeError, OSError, KeyError) as error:

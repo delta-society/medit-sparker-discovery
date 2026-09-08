@@ -102,4 +102,7 @@ def main():
     except ValueError as e:p.error(str(e))
     print(json.dumps(r,ensure_ascii=False,indent=2) if js else r['markdown'])
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    from portable import configure_stdio
+    configure_stdio()
+    main()
