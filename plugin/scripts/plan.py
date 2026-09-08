@@ -118,7 +118,8 @@ def template(product=False, linked=False):
         "open_questions": [],
     }
     if product or linked:
-        for key in ["submission", "facts", "bottlenecks", "baseline", "comparison"]:
+        for key in (["bottlenecks", "baseline", "comparison"] if linked else
+                    ["submission", "facts", "bottlenecks", "baseline", "comparison"]):
             del plan[key]
         plan["planning_scope"] = "product"
     if linked:

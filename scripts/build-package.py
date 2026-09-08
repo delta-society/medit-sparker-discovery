@@ -41,7 +41,13 @@ def build(root, output):
     contents={name:path.read_bytes() for name,path in entries.items()}
     output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as z:
-        for name,content in sorted(contents.items()):z.writestr(name,content)
+        for name,content in sorted(contents.items()):
+            entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            entry.create_system = 3
+            entry.external_attr = 0o100644 << 16
+            # Stored bytes avoid timestamp and zlib-version differences across OSes.
+            entry.compress_type = zipfile.ZIP_STORED
+            z.writestr(entry, content)
     with zipfile.ZipFile(output) as z:
         assert z.testzip() is None
         assert '.claude-plugin/plugin.json' in z.namelist()

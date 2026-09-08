@@ -1,0 +1,60 @@
+name: Explicit live Claude QA
+on:
+  push:
+    branches: [codex/discovery-live-qa]
+    paths: [qa/live-request.json]
+permissions:
+  contents: read
+jobs:
+  request-matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.request.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - id: request
+        name: Validate requested native runners and groups
+        run: python -X utf8 qa/ci_matrix.py
+  native:
+    needs: request-matrix
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.request-matrix.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+    env:
+      QA_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install pinned native Claude Code
+        run: npm install --global @anthropic-ai/claude-code@2.1.263
+      - name: Prepare synthetic cases
+        run: python -X utf8 qa/native_run.py prepare
+      - name: Real Claude multi-turn QA
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.DISCOVERY_QA_TEMP_OAUTH }}
+        run: python -X utf8 qa/native_run.py run
+      - name: Collect redacted evidence
+        if: always()
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.DISCOVERY_QA_TEMP_OAUTH }}
+        run: python -X utf8 qa/native_run.py collect
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-qa-${{ matrix.os }}-${{ matrix.group }}
+          path: qa-artifacts/
+          retention-days: 7

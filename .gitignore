@@ -2,6 +2,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .sparker-discovery/
+.sparker-submissions/
 .env
 .env.*
 !.env.example
+.qa-runs/
+qa-release.zip
+qa-artifacts/

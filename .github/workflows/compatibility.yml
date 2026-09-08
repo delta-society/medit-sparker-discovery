@@ -33,6 +33,8 @@ jobs:
         run: python -X utf8 -m unittest discover -s plugin/tests -v
       - name: Synthetic AR regression tests
         run: python -X utf8 -m unittest discover -s examples/germany-ar -p "test_*.py" -v
+      - name: QA runner transport regressions (no model credentials or calls)
+        run: python -X utf8 -m unittest discover -s tests -v
       - name: Build release ZIP
         run: python -X utf8 scripts/build-package.py --output qa-release.zip
       - name: Git Bash smoke test on native Windows

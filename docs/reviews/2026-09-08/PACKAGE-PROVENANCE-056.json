@@ -1,0 +1,113 @@
+{
+  "source_sha": "205c007f9c2e25f5b76f86f18fec64861dcdd785",
+  "package_version": "0.5.6",
+  "package_sha256": "f2d23983b3924ab74e476d77c47c139e1a6c02fd68010a8fbf44d10a98ffc49b",
+  "all_21_members_match_remote_source": true,
+  "entries": [
+    {
+      "member": ".claude-plugin/plugin.json",
+      "source": "plugin/.claude-plugin/plugin.json",
+      "sha256": "82a4a7258a7b7a7abe19770526464ac98205e0f6b5de444741b5421cb2033046"
+    },
+    {
+      "member": "skills/plan/SKILL.md",
+      "source": "plugin/skills/plan/SKILL.md",
+      "sha256": "d12a1368d6a54ba00088b8e75b0715322e752d0ff7d91e48d6fdcb4f111b5a9f"
+    },
+    {
+      "member": "skills/submit/SKILL.md",
+      "source": "plugin/skills/submit/SKILL.md",
+      "sha256": "99d83edea3221984714e685adc7da075af19eb04ee004124f301cd90a78cfdc3"
+    },
+    {
+      "member": "references/conversation.md",
+      "source": "plugin/references/conversation.md",
+      "sha256": "7576664be1677c230a369983a339d7e8ba64bb419b70a697495040fa5ae0da58"
+    },
+    {
+      "member": "references/data-contract.md",
+      "source": "plugin/references/data-contract.md",
+      "sha256": "173b3daf6664aa511d7bad91bc94222c63a43afa56654a3a7030196cfab4ab5d"
+    },
+    {
+      "member": "references/implementation-example.md",
+      "source": "plugin/references/implementation-example.md",
+      "sha256": "3d7c023da5138a7a27a28bd1b5e2166c21e7786e72e4d82b52f24a716c12f030"
+    },
+    {
+      "member": "references/objective-linkage.md",
+      "source": "plugin/references/objective-linkage.md",
+      "sha256": "703fbc4331ab5f75e6bb6b1a49dd561c982fc770ebc58307a657526a1e5c0d1a"
+    },
+    {
+      "member": "references/kpi-design.md",
+      "source": "plugin/references/kpi-design.md",
+      "sha256": "54b8c23b12bdc1d21ff3c01285b2152b0f4b55045f9161e4e78bbdbe9384ae24"
+    },
+    {
+      "member": "scripts/plan.py",
+      "source": "plugin/scripts/plan.py",
+      "sha256": "1167f1894382fb13efba6693444ca5317aaaf0a17e3c3200b51537cee369218d"
+    },
+    {
+      "member": "scripts/linkage.py",
+      "source": "plugin/scripts/linkage.py",
+      "sha256": "feaaa64c5e51966425e76cfaddf4b0fa8de8794d0ea88c925d19aa6f01d1bb5d"
+    },
+    {
+      "member": "scripts/submission.py",
+      "source": "plugin/scripts/submission.py",
+      "sha256": "1259d49f7b5c66204477a09f537d24fb56308e59697c533ecfcb37183bbd42a8"
+    },
+    {
+      "member": "scripts/example.py",
+      "source": "plugin/scripts/example.py",
+      "sha256": "f0c31c17c68b014fcf65108061b91cac046bddfb2df9072801c136b7825c3f59"
+    },
+    {
+      "member": "scripts/kpi.py",
+      "source": "plugin/scripts/kpi.py",
+      "sha256": "7585862a9d176c286e6367e6e617f32101383987e006396dd45a6b18f0d71788"
+    },
+    {
+      "member": "scripts/portable.py",
+      "source": "plugin/scripts/portable.py",
+      "sha256": "86cf958cfa7dff13d5698205f21dadd76ef726d51a0b7a8fc3f819b69acc00e2"
+    },
+    {
+      "member": "scripts/camp_submit.py",
+      "source": "plugin/scripts/camp_submit.py",
+      "sha256": "1c830df7f6c1f952a8b51960183e83a5a7cd904821c2726c87e63dae5abe2c2f"
+    },
+    {
+      "member": "examples/README.md",
+      "source": "examples/README.md",
+      "sha256": "604fbf66bfb9d3eb2c42953eb11388a496d55dcefb97bcdfc19b6364d3cf4c1d"
+    },
+    {
+      "member": "examples/product-compliance.md",
+      "source": "examples/product-compliance.md",
+      "sha256": "d8fad876868ce4612c418966996f1ed8f0e0e27f740d6c77d0dddc10048e04d2"
+    },
+    {
+      "member": "examples/spec-policy.md",
+      "source": "examples/spec-policy.md",
+      "sha256": "5d4dde8679c232406fb42d27bef645679b9f292b5b33161b1db7d18d35adb048"
+    },
+    {
+      "member": "examples/weekly-report.md",
+      "source": "examples/weekly-report.md",
+      "sha256": "b63cc9feaac01830bfb24b8aaf78231130a59dc9c982aa8fe4aca92a7223a89d"
+    },
+    {
+      "member": "examples/standard-time.md",
+      "source": "examples/standard-time.md",
+      "sha256": "16b12c6fa64d5a0156d6206945855fe2465722e4ec6c75d5d0576847ac7c92e5"
+    },
+    {
+      "member": "USER-GUIDE.md",
+      "source": "docs/plugin-guide.md",
+      "sha256": "f3bccc7dea83676ca85ccbb131975e08ae5937a3c9115832a025cb4c347c5344"
+    }
+  ]
+}

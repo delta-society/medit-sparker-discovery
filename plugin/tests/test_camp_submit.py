@@ -202,6 +202,34 @@ class CampSubmissionTests(unittest.TestCase):
             with self.assertRaisesRegex(PlanError, '읽는 동안'):
                 camp.stable_read(path)
 
+    def test_stat_and_fstat_timestamp_domains_can_differ(self):
+        # Windows stat may report creation time while fstat reports change time.
+        # Different domains are fine if both snapshots remain stable.
+        from types import SimpleNamespace
+        path = self.session()
+        actual_fstat = os.fstat
+        def handle_stat(fd):
+            s = actual_fstat(fd)
+            return SimpleNamespace(st_dev=s.st_dev, st_ino=s.st_ino, st_size=s.st_size,
+                                   st_mtime_ns=s.st_mtime_ns, st_ctime_ns=s.st_ctime_ns + 1000)
+        with patch.object(os, 'fstat', side_effect=handle_stat):
+            self.assertEqual(camp.stable_read(path), path.read_bytes())
+
+    def test_handle_timestamp_mutation_is_still_rejected(self):
+        from types import SimpleNamespace
+        path = self.session()
+        actual_fstat = os.fstat
+        count = 0
+        def handle_stat(fd):
+            nonlocal count
+            count += 1
+            s = actual_fstat(fd)
+            return SimpleNamespace(st_dev=s.st_dev, st_ino=s.st_ino, st_size=s.st_size,
+                                   st_mtime_ns=s.st_mtime_ns, st_ctime_ns=s.st_ctime_ns + count)
+        with patch.object(os, 'fstat', side_effect=handle_stat):
+            with self.assertRaisesRegex(PlanError, '읽는 동안'):
+                camp.stable_read(path)
+
     def test_inspect_rejects_tamper_extra_file_duplicate_and_unsafe_paths(self):
         self.prepare()
         with zipfile.ZipFile(self.output) as archive:
