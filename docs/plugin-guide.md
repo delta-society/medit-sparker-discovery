@@ -15,13 +15,13 @@ ZIP을 버전별 고정 폴더에 풀고 그 폴더를 로드한다. 폴더 바�
 압축을 푼 뒤 자신의 실습 폴더에서 실행한다.
 
 ```sh
-claude --plugin-dir "/절대/경로/sparker-discovery-0.5.2"
+claude --plugin-dir "/절대/경로/sparker-discovery-0.5.3"
 ```
 
 Windows PowerShell에서도 폴더를 인용한다.
 
 ```powershell
-claude --plugin-dir "C:/실습 도구/sparker-discovery-0.5.2"
+claude --plugin-dir "C:/실습 도구/sparker-discovery-0.5.3"
 ```
 
 Claude Code에서 입력한다.
@@ -50,7 +50,7 @@ Claude Code에서 입력한다.
 
 질문은 객관식과 주관식을 섞는다. 선택 가능한 내용에는 번호 보기·기타 직접 입력·아직 모름을 주고, 실제 시간·업무 설명·예외는 짧게 직접 받는다. 번호만 답해도 되고 보기 밖의 자기 말로 답해도 된다. 한 번에 질문 하나이며 추가 설명은 선택이다.
 
-수정 ZIP 0.5.2를 별도 고정 폴더에 풀고 그 폴더로 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
+수정 ZIP 0.5.3를 별도 고정 폴더에 풀고 그 폴더로 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
 
 ## 캠프 과제 제출
 

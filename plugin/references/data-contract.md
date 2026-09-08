@@ -40,7 +40,7 @@ python3 "<PLUGIN>/scripts/plan.py" --root "<승인한 로컬 폴더>" reopen cas
 | submission | `{text, source}` 최초 제출 원문/출처. 생성 후 불변. 잘못된 원문도 덮어쓰지 말고 facts에서 정정한다. |
 | facts | `[{id,text,source,kind}]`. kind: `submitted`(제공된 자기보고/자료), `human_confirmed`(실제 발화 근거), `ai_hypothesis`. source에 실제 원문 위치나 대화 발화를 적는다. |
 | user_result | `{user,result,use_when}` 결과 사용자 역할·결과·사용 시점. 모르면 가설이라고 명시한다. |
-| workflow | `[{step,actor,input,output,wait_or_rework,basis}]`. basis에 사실 ID/AI 가설 여부를 적는다. 대기 없음과 미확인을 구분한다. |
+| workflow | `[{step,actor,input,output,wait_or_rework,basis}]`. actor에는 담당 역할만 적고 수행 방식을 섞지 않는다. basis에 사실 ID/AI 가설 여부를 적는다. 원문에 없는 수행 방식·출력·대기 상태는 현행 사실이 아니다. 대기 정보가 없으면 wait_or_rework는 미확인이다. 대기 없음과 미확인을 구분한다. |
 | bottlenecks | `[{id,claim,evidence:[fact-ID],counterevidence:[반증 신호],status}]`. status: `hypothesis`, `human_confirmed`, `rejected`. AI 가설 근거도 사실 목록에 가설로 남긴다. 근거 부재를 숨기지 않는다. |
 | selected_change | `{candidate_id,change,reason,non_goals:[...]}`. 제품 모드에서는 주어진 목표로 바로 기획하며 candidate_id=null과 빈 후보 목록을 허용한다. 레거시 모드만 확정 전 candidate_id 필요. 병목 가설이 입증되지 않아도 탐색용 변경을 선택할 수 있다. |
 | responsibilities | `{ai:[...],code:[...],human:[...]}`. 하지 않는 역할은 이유와 “사용하지 않음”을 명시한다. |
