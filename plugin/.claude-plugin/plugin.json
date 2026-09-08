@@ -1,6 +1,8 @@
 {
   "name": "sparker-discovery",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "목적 KPI·기존 업무 앱 연결을 기획하고 캠프 과제와 선택한 학습 기록의 제출을 준비하는 AI Sparker 플러그인",
-  "author": {"name": "Delta Society"}
+  "author": {
+    "name": "Delta Society"
+  }
 }

@@ -15,3 +15,14 @@ AI Sparker 1기 상부구조 트랙 — 참가자 산출물에서 메디트가 �
 ---
 
 상위 Project 캐논: `delta-society/delta-society-os` `projects/mbk-medit/`
+
+## 플러그인 설치 · GitHub marketplace
+
+```text
+/plugin marketplace add delta-society/medit-sparker-discovery
+/plugin install sparker-discovery@sparker
+```
+
+Claude Code를 다시 시작한 뒤 `/sparker-discovery:plan`을 실행합니다. Python 3.9 이상과 PDF용 Chrome 또는 Edge가 필요합니다. 공개 저장소에서 설치하므로 별도 저장소 권한 요청은 필요하지 않습니다.
+
+설치·업데이트: [사용 안내](docs/plugin-guide.md). 플러그인과 예시·한글 글꼴·PDF 자산은 `plugin/` 안에 함께 배포됩니다.
