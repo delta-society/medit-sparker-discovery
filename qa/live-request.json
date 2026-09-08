@@ -1,13 +1,22 @@
 {
-  "run_id": "native-01",
+  "run_id": "native-02",
   "model": "claude-sonnet-4-6",
   "claude_version": "2.1.263",
-  "budget_usd": 18,
-  "turn_budget_usd": 0.6,
-  "timeout_seconds": 420,
+  "budget_usd": 45,
+  "turn_budget_usd": 1.5,
+  "timeout_seconds": 600,
   "scenarios": [
-    "sufficient-source", "unknown-kpi", "change-reject", "save-refusal",
-    "stop-resume", "finalize-lifecycle", "camp-plan-only", "camp-selected-session",
-    "camp-refuse-raw", "camp-multiple-sessions", "camp-draft", "camp-prepared-not-submitted"
+    "sufficient-source",
+    "unknown-kpi",
+    "change-reject",
+    "save-refusal",
+    "stop-resume",
+    "finalize-lifecycle",
+    "camp-plan-only",
+    "camp-selected-session",
+    "camp-refuse-raw",
+    "camp-multiple-sessions",
+    "camp-draft",
+    "camp-prepared-not-submitted"
   ]
 }

@@ -135,8 +135,8 @@ class RunnerTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             qa.prepare(other, 'claude-sonnet-4-6', '2.1.263')
         cases = qa.read(other / 'manifest.json')['cases']
-        self.assertEqual(len(cases), 13)
-        self.assertEqual(len({c['session_id'] for c in cases}), 13)
+        self.assertEqual(len(cases), 18)
+        self.assertEqual(len({c['session_id'] for c in cases}), 18)
         scenario = next(c['scenario'] for c in cases if c['scenario']['id'] == 'camp-plan-only')
         work = other / 'camp-plan-only/work'
         archive = work / '.sparker-submissions/test.zip'
@@ -212,6 +212,51 @@ class RunnerTests(unittest.TestCase):
         before, _ = qa.inspect_records(work, {}, {})
         before[next(iter(before))] = 'wrong'
         with self.assertRaisesRegex(ValueError, 'immutable revision'):
+            qa.inspect_records(work, {}, before)
+
+    def test_store_root_scratch_is_mutable_and_excluded_from_revision_history(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        store.write('case', 'new', plan=qa.plan.template(linked=True))
+        scratch = store.root / 'case-input.json'
+        scratch.write_text('{}')
+        before, records = qa.inspect_records(work, {}, {})
+        self.assertEqual(len(records), 1)
+        self.assertTrue(all(name.startswith('case/r000001/') for name in before))
+        scratch.write_text('{"changed": true}')
+        after, _ = qa.inspect_records(work, {}, before, approved=before)
+        self.assertEqual(after, before)
+        scratch.unlink()
+        self.assertEqual(qa.inspect_records(work, {}, before)[0], before)
+
+    def test_scratch_cannot_hide_malformed_or_unexpected_case_directory(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        store.write('case', 'new', plan=qa.plan.template(linked=True))
+        (store.root / 'input.json').write_text('{}')
+        (store.root / 'broken-case').mkdir()
+        with self.assertRaisesRegex(qa.plan.PlanError, '저장된 과제가 없습니다'):
+            qa.inspect_records(work, {}, {})
+        (store.root / 'broken-case').rmdir()
+        with self.assertRaisesRegex(ValueError, 'unexpected case identity'):
+            qa.inspect_records(work, {'expected_case_id': 'other-case'}, {})
+
+    def test_scratch_does_not_bypass_revision_corruption_or_deletion(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        store.write('case', 'new', plan=qa.plan.template(linked=True))
+        (store.root / 'input.json').write_text('{}')
+        before, _ = qa.inspect_records(work, {}, {})
+        markdown = store.root / 'case/r000001/plan.md'
+        original = markdown.read_bytes()
+        markdown.write_bytes(b'changed')
+        with self.assertRaisesRegex(qa.plan.PlanError, 'Markdown/JSON'):
+            qa.inspect_records(work, {}, before)
+        markdown.write_bytes(original)
+        import shutil
+        shutil.rmtree(store.root / 'case')
+        (store.root / 'case').write_text('replacement scratch file')
+        with self.assertRaisesRegex(ValueError, 'immutable revision changed'):
             qa.inspect_records(work, {}, before)
 
     def test_finalization_requires_authorized_turn_and_exact_export(self):
