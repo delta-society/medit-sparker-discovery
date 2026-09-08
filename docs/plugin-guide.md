@@ -10,12 +10,18 @@ Claude Code와 Python 3가 있는 환경에서 사용한다. 자체 웹앱이나
 
 Windows 네이티브와 macOS를 지원 대상으로 한다. Python 3.9 이상이 필요하며 새 교육 환경에는 지원 중인 Python 3.12 이상을 권장한다. 설치 확인은 macOS에서 `python3 -X utf8 --version`, Windows에서 `py -3 -X utf8 --version`으로 한다. Windows에서 `py`가 없다면 `python -X utf8 --version`으로 확인한다. Windows의 Bash/PowerShell 도구 선택은 Claude Code 버전·설정에 따라 다르므로 시작 터미널만으로 단정하지 않는다.
 
-ZIP 경로에 공백·한글이 있을 수 있으므로 `claude --plugin-dir "./sparker-discovery-plugin.zip"`처럼 인용한다. 작업 기록은 일반 로컬 실습 폴더에 둔다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 아직 검증하지 않았다. 운영체제별 검증 상태와 근거는 소스 저장소 `docs/platform-compatibility.md`를 따른다.
+ZIP을 버전별 고정 폴더에 풀고 그 폴더를 로드한다. 폴더 바로 아래 `.claude-plugin/plugin.json`이 있어야 한다. 한글·공백 경로는 항상 인용한다. 실행 중이거나 재개할 세션에서 이 폴더를 이동·교체하지 않는다. 기획 기록은 별도의 일반 로컬 실습 폴더에 둔다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 아직 검증하지 않았다. OS별 근거는 소스 저장소 `docs/platform-compatibility.md`를 따른다.
 
-받은 ZIP을 작업 폴더에 놓고 터미널에서 실행한다.
+압축을 푼 뒤 자신의 실습 폴더에서 실행한다.
 
 ```sh
-claude --plugin-dir ./sparker-discovery-plugin.zip
+claude --plugin-dir "/절대/경로/sparker-discovery-0.5.2"
+```
+
+Windows PowerShell에서도 폴더를 인용한다.
+
+```powershell
+claude --plugin-dir "C:/실습 도구/sparker-discovery-0.5.2"
 ```
 
 Claude Code에서 입력한다.
@@ -24,14 +30,12 @@ Claude Code에서 입력한다.
 /sparker-discovery:plan
 ```
 
-기존 제출문이나 파일 경로를 함께 주어도 된다. 예를 들어 `/sparker-discovery:plan 예시 weekly-report`로 제공된 문제에서 시작할 수 있다. 예시 이름은 `product-compliance`, `spec-policy`, `weekly-report`, `standard-time`이다. ZIP 직접 로딩이 지원되지 않는 이전 Claude Code에서는 ZIP을 폴더에 풀고 `claude --plugin-dir ./압축푼폴더`로 실행한다. 해당 폴더 바로 아래 `.claude-plugin/plugin.json`이 있어야 한다.
-
-소스 레포에서는 `claude --plugin-dir ./plugin`으로 실행한다. 참가자 대화는 이 작업 폴더의 기록으로 저장한다. 다른 사람이 저장한 과제와 섞이지 않게 자신의 작업 폴더에서 시작한다.
+기존 제출문이나 파일 경로를 함께 주어도 된다. `/sparker-discovery:plan 예시 weekly-report`의 예시 이름은 `product-compliance`, `spec-policy`, `weekly-report`, `standard-time`이다. 소스 레포에서는 `claude --plugin-dir ./plugin`으로 실행한다. 다른 사람이 저장한 과제와 섞이지 않게 자신의 작업 폴더에서 시작한다. ZIP 직접 로딩은 사용 중인 Claude 버전에서 별도 확인한 경우에만 사용하며, 이번 네이티브 QA는 압축해제 폴더 로드 방식이다.
 
 ## 대화
 
 1. 선택한 예시나 기존 제출 원문을 먼저 읽어 업무 범위·시간·측정 계기·자료 위치를 초안에 채운다. 이미 적힌 내용과 이전 답변은 다시 묻지 않는다. 단순/복잡 구분 등 원문의 조건도 유지한다.
-2. 제출은 변경 후보로 두고 먼저 목적 KPI·정의/품질/단위/출처/변화 방향과 인과 가설을 제안한다. 이미 알려진 목표는 재사용한다. 제안을 선택/수정하거나 아직 모름으로 남길 수 있다. 숫자 목표를 요구하거나 만들지 않는다.
+2. 목표·활용이 미확인이고 재사용이 타당하면, AI가 남길 데이터·판단 기준·절차와 업무 활용 가설 1~2개를 먼저 제안한다. 선택/수정/아직 모름을 받은 뒤 필요한 기록과 그 활용의 품질·실제 사용 KPI를 연결한다. 확인된 목표는 유지하고 일회성 업무에 재사용을 강제하지 않는다. 선택하지 않은 기능과 숫자 목표를 임의로 추가하지 않는다.
 3. 기존 업무 앱의 입력·시작 계기·결과 반영 면부터 재사용한다. AI/코드/사람 역할, 원천 레코드·결과 필드/상태·중복/실패·측정 이벤트 연결을 설계한다. 앱/권한/필드가 미확인이면 획득 작업으로 남긴다.
 4. 구현할 범위와 정상·예외 입력에서의 기대 결과를 함께 정한다. 아직 없는 데이터·규칙은 확보할 대상과 방법으로 남길 수 있다.
 5. 최종 내용을 읽고 확정하면 구현자가 쓸 기획서가 저장된다. 문서가 생성됐다는 이유만으로 자동 확정하지 않는다.
@@ -46,7 +50,7 @@ Claude Code에서 입력한다.
 
 질문은 객관식과 주관식을 섞는다. 선택 가능한 내용에는 번호 보기·기타 직접 입력·아직 모름을 주고, 실제 시간·업무 설명·예외는 짧게 직접 받는다. 번호만 답해도 되고 보기 밖의 자기 말로 답해도 된다. 한 번에 질문 하나이며 추가 설명은 선택이다.
 
-수정 ZIP 0.5.1를 이전 파일 대신 로드해 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
+수정 ZIP 0.5.2를 별도 고정 폴더에 풀고 그 폴더로 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
 
 ## 캠프 과제 제출
 

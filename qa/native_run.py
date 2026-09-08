@@ -16,7 +16,8 @@ group = os.environ.get('QA_GROUP', 'all')
 selected = [s for s in request['scenarios'] if group == 'all' or
             (group == 'camp' and s.startswith('camp-')) or
             (group == 'finalize' and s == 'finalize-lifecycle') or
-            (group == 'planning' and not s.startswith('camp-') and s != 'finalize-lifecycle')]
+            (group == 'reuse' and s.startswith('reuse-')) or
+            (group == 'planning' and not s.startswith(('camp-', 'reuse-')) and s != 'finalize-lifecycle')]
 qa.require(selected, 'empty QA group')
 output = Path(os.environ['RUNNER_TEMP']) / 'Discovery 한글 QA' / (request['run_id'] + '-' + group)
 if sys.argv[1] == 'prepare':

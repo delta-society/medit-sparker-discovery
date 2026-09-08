@@ -1,6 +1,6 @@
 # Windows 네이티브 / macOS 호환성 — 2026-09-08
 
-지원 대상은 참가자의 Windows 네이티브 Claude Code와 macOS Claude Code다. Linux 컨테이너 검증은 두 OS의 실기기 QA를 대체하지 않는다. 현재 Windows/macOS CI를 작성했으며 아직 원격에서 실행하지 않았다. 검색 결과는 위험과 설계 근거이지 설치·대화 시험 통과 증거가 아니다.
+지원 대상은 참가자의 Windows 네이티브 Claude Code와 macOS Claude Code다. Linux 컨테이너 검증은 두 OS의 실기기 QA를 대체하지 않는다. Windows/macOS 네이티브 helper CI는 원격에서 실행해 통과했다. 실제 Claude 대화 결과는 아래 실행 기록 및 별도 live QA 보고서와 구분한다. 검색 결과는 위험과 설계 근거이지 설치·대화 시험 통과 증거가 아니다.
 
 ## 공식 문서와 사례에서 확인한 사항
 
@@ -21,7 +21,7 @@
 - `.gitattributes`로 소스·번들 문서의 LF checkout을 지정하고 과거 fixture는 `-text`로 원본 바이트를 보존한다. 아직 기존 파일 전체를 renormalize하지 않았다.
 - 테스트 소비자는 subprocess의 UTF-8을 명시적으로 decode한다. CP1252/CP949/ASCII 파이프를 강제한 CLI 검사, 한글·공백·& 경로, BOM 입력, 한글·공백 폴더에 해제한 ZIP 실행을 검사한다.
 - 파일 경로의 symlink/junction 거부 정책은 유지한다. Python 3.9~3.11은 `Path.is_junction`이 없어 junction 검사가 제한되므로 새 교육 환경에는 Python 3.12 이상을 권장한다. [Python isjunction 도입](https://docs.python.org/3/library/os.path.html#os.path.isjunction).
-- 이번 작업에서는 병행 작성 중인 `camp_submit.py`와 해당 테스트를 수정하거나 배포 허용 목록에 추가하지 않았다.
+- Camp helper와 선택 세션 검증도 현재 후보에 포함되어 있다. 0.5.1은 원문 보존과 오류 뒤 제출 범위 변경 지침을 보완했다. PDF 내보내기는 포함하지 않는다.
 
 ## 자동 검증 구성
 
@@ -31,13 +31,13 @@
 - Windows Server 2022: Python 3.9 / 3.13, Git Bash 및 PowerShell 명령 smoke test.
 - macOS 15: Python 3.13.
 - 전체 helper 테스트, 합성 AR 테스트, 패키징·해제 실행 검사.
-- push/PR/수동 실행으로 동작. 현재 로컬 작성 상태이며 push/실행하지 않았다. GitHub Actions 허용·사용량 정책은 해당 저장소 설정을 따른다.
+- push/PR/수동 실행으로 동작. 원격 실행 [34193780227](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34193780227)은 통과했다. 상세 소스 SHA와 OS별 결과는 해당 실행의 matrix를 따른다.
 
 Windows runner는 WSL이 아닌 네이티브 Windows이지만 참가자의 Windows 10/11 PC와 동일하지 않다. Python 3.9는 기존 최소 버전 호환을 위한 시험 대상이며 새 설치 권장 버전이 아니다. CI의 `-X utf8`에 결함이 가려지지 않도록 별도 subprocess 테스트가 UTF-8 mode를 끄고 레거시 코드 페이지를 강제한다.
 
 ## 이번 로컬 검증
 
-Linux Python 3.13에서 helper 테스트 86개(병행 Camp 테스트 포함)와 AR 12개, 총 98개 PASS. manifest 검증과 `git diff --check` PASS. 레거시 코드 페이지 강제는 Windows 파이프의 인코딩 실패 조건을 시험한 것이며 Windows OS 실행 결과는 아니다. Windows/macOS workflow는 아직 원격 실행 전이다.
+Linux Python 3.13에서 helper 테스트 86개(병행 Camp 테스트 포함)와 AR 12개, 총 98개 PASS. manifest 검증과 `git diff --check` PASS. 레거시 코드 페이지 강제는 Windows 파이프의 인코딩 실패 조건을 시험한 것이며 Windows OS 실행 결과는 아니다. 위 수치는 최초 로컬 검증 이력이며 현재 원격 결과는 위 CI 링크를 따른다.
 
 PowerShell 5.1의 기본 리다이렉션은 UTF-16LE를 만들 수 있으므로 호스트 파일 도구 또는 명시적 UTF-8 쓰기를 사용하도록 안내했다. [Microsoft 인코딩 문서](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding).
 

@@ -135,8 +135,8 @@ class RunnerTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             qa.prepare(other, 'claude-sonnet-4-6', '2.1.263')
         cases = qa.read(other / 'manifest.json')['cases']
-        self.assertEqual(len(cases), 18)
-        self.assertEqual(len({c['session_id'] for c in cases}), 18)
+        self.assertEqual(len(cases), 22)
+        self.assertEqual(len({c['session_id'] for c in cases}), 22)
         scenario = next(c['scenario'] for c in cases if c['scenario']['id'] == 'camp-plan-only')
         work = other / 'camp-plan-only/work'
         archive = work / '.sparker-submissions/test.zip'
@@ -273,6 +273,9 @@ class RunnerTests(unittest.TestCase):
                  plan_sha256=record['plan_sha256'], explicit=True,
                  scopes=list(qa.plan.SCOPES) + list(linkage.SCOPES))
         final = store.write('qa-finalize', 'finalize', expected=1, confirmation=c)
+        self.assertEqual(scenario['expected_final_plan_sha256'], record['plan_sha256'])
+        self.assertEqual(final['plan_sha256'], record['plan_sha256'])
+        self.assertNotEqual(final['revision'], record['revision'])
         with self.assertRaisesRegex(ValueError, 'unapproved finalization'):
             qa.inspect_records(work, scenario, {}, 1)
         _, records = qa.inspect_records(work, scenario, {}, 2)
@@ -341,6 +344,28 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(progress['approved_revision_files'], progress['revision_files'])
         return progress['approved_revision_files']
 
+    def test_approval_turn_rejects_changed_plan_with_valid_confirmation(self):
+        scenario, work, store = self.prepare_finalization()
+        calls = []
+        def capture(*args):
+            calls.append(args)
+            if len(calls) == 2:
+                ready = store.load('qa-finalize')
+                changed = ready['plan']
+                changed['linkage']['measurement']['record_mapping'] += ' UNREVIEWED MEASUREMENT FIELD'
+                store.write('qa-finalize', 'update', expected=ready['revision'],
+                            reason='synthetic change after participant approval', plan=changed)
+                final = self.finalize_synthetic(store, scenario)
+                self.assertEqual(store.load('qa-finalize'), final)  # Structurally valid new confirmation.
+                self.assertNotEqual(final['plan_sha256'], scenario['expected_final_plan_sha256'])
+                (work / 'final-plan.md').write_bytes(qa.plan.markdown(final).encode('utf-8'))
+            return 0, stream(self.sid), '', False
+        with self.assertRaisesRegex(ValueError, 'finalized plan differs from seeded approval target'):
+            self.fake_run(2, capture)
+        state = qa.read(self.root / 'state.json')
+        self.assertNotEqual(state.get('structural_status'), 'PASS')
+        self.assertEqual(len(state['cases']['finalize-lifecycle']['turns']), 1)
+
     def test_stale_approval_cannot_finalize_changed_plan_on_later_turn(self):
         scenario, work, store = self.prepare_finalization()
         self.pause_after_approval(store, scenario)
@@ -352,7 +377,7 @@ class RunnerTests(unittest.TestCase):
             replacement = self.finalize_synthetic(store, scenario)
             (work / 'final-plan.md').write_bytes(qa.plan.markdown(replacement).encode('utf-8'))
             return 0, stream(self.sid), '', False
-        with self.assertRaisesRegex(ValueError, 'approved revision set changed'):
+        with self.assertRaisesRegex(ValueError, 'finalized plan differs from seeded approval target'):
             self.fake_run(capture=capture)
         state = qa.read(self.root / 'state.json')
         self.assertNotEqual(state.get('structural_status'), 'PASS')
