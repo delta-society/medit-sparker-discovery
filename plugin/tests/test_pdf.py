@@ -42,7 +42,7 @@ class PdfTests(unittest.TestCase):
             self.assertEqual(render.call_count, 1)
         self.assertEqual((self.store.case_path('sample') / 'r000002' / 'plan.json').read_bytes(), before)
 
-    def test_cli_finalize_reports_pdf_failure_without_losing_record(self):
+    def test_cli_finalize_defers_pdf_until_explicit_request(self):
         case = 'cli-finalize'
         draft = self.store.write(case, 'new', plan=complete())
         confirm = self.store.root / 'confirmation.json'
@@ -55,7 +55,13 @@ class PdfTests(unittest.TestCase):
         self.assertEqual(run.returncode, 0, run.stderr)
         result = json.loads(run.stdout)
         self.assertEqual(result['status'], 'finalized')
-        self.assertEqual(result['pdf']['code'], 'browser_missing')
+        self.assertEqual(result['pdf']['status'], 'not_requested')
+        self.assertFalse((self.store.root / '.pdf-exports').exists())
+        retry = subprocess.run([sys.executable, str(Path(pdf.__file__).with_name('plan.py')),
+                                '--root', str(self.store.root), 'pdf', case,
+                                '--expected-revision', '2'], env=env, capture_output=True,
+                               text=True, encoding='utf-8', check=True)
+        self.assertEqual(json.loads(retry.stdout)['code'], 'browser_missing')
         self.assertEqual(self.store.load(case)['revision'], 2)
 
     def test_draft_busy_and_old_revision(self):

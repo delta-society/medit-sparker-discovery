@@ -91,6 +91,6 @@ ID는 소문자 ASCII 영숫자와 하이픈 1–64자, Windows 예약 이름 �
 
 ## PDF 파생 출력
 
-`finalize` CLI 응답은 기존 확정 결과에 `pdf: {status, revision, path?, code?, message?, retry?}`를 추가한다. PDF 실패는 저장된 확정본을 되돌리지 않는다. `pdf <case_id> --expected-revision N`은 전체 이력을 검증한 뒤 명시한 확정 리비전만 재출력한다(초안 거부). 이후 reopen되었어도 과거 확정 리비전 출력은 가능하다.
+`finalize` CLI 응답은 `pdf: {status: "not_requested", revision}`를 반환하고 브라우저를 실행하지 않는다. PDF에 대한 사용자 요청 후 별도 `pdf` 명령을 실행하며 결과는 `{status, revision, path?, code?, message?, retry?}`이다. PDF 실패는 저장된 확정본을 되돌리지 않는다. `pdf <case_id> --expected-revision N`은 전체 이력을 검증한 뒤 명시한 확정 리비전만 재출력한다(초안 거부). 이후 reopen되었어도 과거 확정 리비전 출력은 가능하다.
 
 원본 `rNNNNNN/plan.json`, `plan.md`는 변경하지 않는다. 파생물은 저장 루트의 `.pdf-exports/<case>/rNNNNNN/<fingerprint>/`에 `plan.pdf`, 오프라인 `plan.html`, `receipt.json`으로 함께 공개한다. 지문은 원본 레코드·번들 자산·출력기 버전에 묶인다. 같은 지문은 해시 확인 후 재사용하고 손상 파일을 덮어쓰지 않는다. 동시 생성은 해당 리비전 `.lock`으로 막는다. 기획서 원문은 외부로 전송하지 않는다.
