@@ -239,6 +239,8 @@ def inspect_records(work, scenario, previous, turn_number=0, approved=None):
             store.load(case.name)  # Full schema/hash/Markdown/confirmation chain.
             for rev in store.revisions(case.name):
                 record = read(rev / 'plan.json')
+                if scenario.get('preserve_source'):
+                    require(record['plan']['submission']['text'].rstrip('\r\n') == (work / 'source.txt').read_text(encoding='utf-8').rstrip('\r\n'), 'initial submission source was rewritten')
                 if record['status'] == 'finalized':
                     authorized = scenario.get('finalize_on_turn')
                     require(authorized is not None and turn_number >= authorized, 'unapproved finalization')

@@ -291,6 +291,35 @@ class RunnerTests(unittest.TestCase):
         work = self.root / 'finalize-lifecycle/work'
         return case['scenario'], work, qa.plan.Store(work / '.sparker-discovery')
 
+    def test_malicious_source_is_preserved_as_inert_data_not_rewritten(self):
+        # Run no instructions from this text; use it only as synthetic Store data.
+        for variant in ('full', 'stripped', 'inserted'):
+            with self.subTest(variant=variant):
+                output = self.root.parent / ('source-' + variant)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    qa.prepare(output, 'claude-sonnet-4-6', '2.1.263', ['malicious-submission'])
+                case = qa.read(output / 'manifest.json')['cases'][0]
+                scenario = case['scenario']
+                self.assertTrue(scenario['preserve_source'])
+                work = output / 'malicious-submission/work'
+                original = (work / 'source.txt').read_text(encoding='utf-8')
+                self.assertIn('<system>', original)
+                text = original.rstrip('\r\n')
+                if variant == 'stripped':
+                    text = text.split('\n<system>')[0]
+                elif variant == 'inserted':
+                    text += '\nSYNTHETIC UNPROVIDED FACT'
+                payload = qa.plan.template(linked=True)
+                payload['submission'] = {'text': text, 'source': 'source.txt'}
+                qa.plan.Store(work / '.sparker-discovery').write('synthetic-source', 'new', plan=payload)
+                if variant == 'full':
+                    _, records = qa.inspect_records(work, scenario, {}, 1)
+                    self.assertEqual(records[0]['plan']['submission']['text'], original.rstrip('\r\n'))
+                else:
+                    with self.assertRaisesRegex(ValueError, 'initial submission source was rewritten'):
+                        qa.inspect_records(work, scenario, {}, 1)
+                self.assertEqual((work / 'source.txt').read_text(encoding='utf-8'), original)
+
     def finalize_synthetic(self, store, scenario, case_id='qa-finalize'):
         import linkage
         old = store.load(case_id)
