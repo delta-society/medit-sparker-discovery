@@ -1,7 +1,7 @@
 name: Native PDF smoke
 on:
   push:
-    branches: ['codex/pdf-native-ci-*']
+    branches: ['codex/pdf-native-ci-*', 'codex/pdf-opt-in']
   workflow_dispatch:
 permissions:
   contents: read

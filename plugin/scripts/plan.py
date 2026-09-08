@@ -605,8 +605,7 @@ def main(argv=None):
                           "plan_sha256": record["plan_sha256"],
                           "directory": str(store.case_path(args.case_id) / f"r{record['revision']:06d}")}
                 if args.command == "finalize":
-                    from pdf_export import export_pdf
-                    result["pdf"] = export_pdf(store, args.case_id, record["revision"])
+                    result["pdf"] = {"status": "not_requested", "revision": record["revision"]}
         print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
         return 0
     except (PlanError, OSError, ValueError, TypeError, KeyError) as exc:

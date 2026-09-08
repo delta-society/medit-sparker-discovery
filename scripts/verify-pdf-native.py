@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Native CI smoke: extracted release, automatic PDF, retry, immutable ledger."""
+"""Native CI smoke: extracted release, opt-in PDF, retry, immutable ledger."""
 import hashlib
 import json
 import os
@@ -35,8 +35,11 @@ def main():
     confirm = out / 'confirmation.json'
     confirm.write_text(json.dumps(confirmation(draft)), encoding='utf-8')
     finalized = run('finalize', 'native', '--expected-revision', '1', '--confirmation', str(confirm))
-    assert finalized['pdf']['status'] == 'ready', finalized
-    pdf_path = Path(finalized['pdf']['path'])
+    assert finalized['pdf']['status'] == 'not_requested', finalized
+    assert not (root / '.pdf-exports').exists()
+    requested = run('pdf', 'native', '--expected-revision', '2')
+    assert requested['status'] == 'ready', requested
+    pdf_path = Path(requested['path'])
     raw = pdf_path.read_bytes()
     assert raw.startswith(b'%PDF-') and len(raw) > 10000
     ledger = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
@@ -47,7 +50,7 @@ def main():
                       for p in root.rglob('*') if p.is_file() and '.pdf-exports' not in p.parts}
     (out / 'native.pdf').write_bytes(raw)
     receipt = {'platform': sys.platform, 'browser': str(browser), 'bytes': len(raw),
-               'automatic_pdf': True, 'retry_reused': True, 'ledger_unchanged': True}
+               'finalize_without_pdf': True, 'requested_pdf': True, 'retry_reused': True, 'ledger_unchanged': True}
     (out / 'receipt.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
     print(json.dumps(receipt, indent=2))
     env = dict(os.environ, SPARKER_PDF_TEST_BROWSER=str(browser))

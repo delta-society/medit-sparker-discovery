@@ -1,6 +1,6 @@
 # DEL-474 — 확정 기획서 로컬 A4 PDF
 
-사람이 기획서를 확정하면 `plan.py finalize`가 불변 JSON/Markdown을 저장·재검증한 뒤 같은 리비전의 PDF를 자동 생성한다. 참가자는 추가 npm/Node/Python 패키지 설치나 명령 실행을 하지 않는다. 기존 Python 도우미와 설치된 Edge/Chrome을 사용하며, 브라우저는 별도 임시 프로필로 실행한다.
+사람이 기획서를 확정하면 `plan.py finalize`가 불변 JSON/Markdown을 저장·재검증한 뒤 PDF는 생성하지 않는다. 대화에서 PDF 생성 여부와 Chrome/Edge 요건을 안내하고, 사용자가 요청한 경우에만 같은 리비전의 `pdf` 명령을 실행한다. 참가자는 추가 npm/Node/Python 패키지 설치나 명령 실행을 하지 않는다. 기존 Python 도우미와 설치된 Edge/Chrome을 사용하며, 브라우저는 별도 임시 프로필로 실행한다.
 
 ## 출력과 원본
 
@@ -12,7 +12,7 @@ Week 0 DWM의 실제 업무 설명을 유형 선정 근거로 사용했다. 개�
 
 파생 출력 위치는 `<root>/.pdf-exports/<case>/rNNNNNN/<fingerprint>/`이다. `plan.pdf`, 오프라인 `plan.html`, 해시·브라우저·리비전을 기록한 `receipt.json`을 임시 폴더에서 함께 공개한다. 원본 레코드, 번들 자산, 출력기 코드의 지문이 같으면 기존 파일의 해시를 검증해 재사용한다. 손상된 결과는 덮어쓰지 않고 실패를 반환한다. 같은 리비전의 병렬 출력은 `.lock`으로 차단한다. 중단되어 잠금이 남으면 출력 프로세스 종료를 확인한 뒤 운영자가 잠금만 복구한다.
 
-`finalize` 응답의 기획 상태와 `pdf.status`는 별개다. PDF 실패 시 확정본/확인 기록은 보존되고 실패 코드와 재시도 안내가 반환된다. `pdf <case> --expected-revision N`은 전체 이력을 검증한 뒤 지정한 과거 확정본도 재출력할 수 있다. 초안 출력은 거부한다. 재시도에 reopen·재확정은 필요 없다.
+`finalize`는 `pdf.status=not_requested`를 반환한다. 별도 `pdf` 명령의 결과와 기획 확정 상태는 별개다. PDF 실패 시 확정본/확인 기록은 보존되고 실패 코드와 재시도 안내가 반환된다. `pdf <case> --expected-revision N`은 전체 이력을 검증한 뒤 지정한 과거 확정본도 재출력할 수 있다. 초안 출력은 거부한다. 재시도에 reopen·재확정은 필요 없다.
 
 ## 실행·보안 경계
 
