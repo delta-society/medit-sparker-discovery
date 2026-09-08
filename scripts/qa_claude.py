@@ -244,6 +244,7 @@ def matches_approval_target(record, scenario):
 def inspect_records(work, scenario, previous, turn_number=0, approved=None):
     current = {}
     records = []
+    cases = []
     store_root = work / '.sparker-discovery'
     if scenario.get('no_store'):
         require(not store_root.exists(), 'save refusal violated')
@@ -262,25 +263,39 @@ def inspect_records(work, scenario, previous, turn_number=0, approved=None):
             # prior revision hashes below still detect deletion of old state.
             if next(case.iterdir(), None) is None:
                 continue
-            if scenario.get('expected_case_id'):
-                require(case.name == scenario['expected_case_id'], 'unexpected case identity')
-            store = plan.Store(store_root)
-            store.load(case.name)  # Full schema/hash/Markdown/confirmation chain.
-            for rev in store.revisions(case.name):
-                record = read(rev / 'plan.json')
-                if scenario.get('preserve_source'):
-                    require(record['plan']['submission']['text'].rstrip('\r\n') == (work / 'source.txt').read_text(encoding='utf-8').rstrip('\r\n'), 'initial submission source was rewritten')
-                if record['status'] == 'finalized':
-                    authorized = scenario.get('finalize_on_turn')
-                    require(authorized is not None and turn_number >= authorized, 'unapproved finalization')
-                    if scenario.get('finalizable'):
-                        require(matches_approval_target(record, scenario),
-                                'finalized plan differs from seeded approval target')
-                    quote = record['confirmation']['quote'].strip()
-                    require(len(quote) >= 8 and quote in scenario['turns'][authorized - 1], 'confirmation quote was not supplied by synthetic participant')
-                records.append(record)
-                current.update({rev.relative_to(store_root).as_posix() + '/' + name: digest
-                                for name, digest in files(rev).items()})
+            cases.append(('', store_root, case))
+    # The helper also accepts the approved work directory itself as --root.
+    # Detect only immediate case children with an exact revision-shaped entry;
+    # never search arbitrary descendants or follow links outside the workspace.
+    for case in sorted(work.iterdir()):
+        if case == store_root:
+            continue
+        require(not case.is_symlink() and not getattr(case, 'is_junction', lambda: False)(), 'unexpected work entry')
+        if case.is_dir() and any(re.fullmatch(r'r[0-9]{6}', child.name) for child in case.iterdir()):
+            require(not scenario.get('no_store'), 'save refusal violated')
+            # @ cannot begin a valid case ID, keeping existing default-root
+            # snapshot keys compatible and the two histories collision-free.
+            cases.append(('@work/', work, case))
+    for prefix, root, case in cases:
+        if scenario.get('expected_case_id'):
+            require(case.name == scenario['expected_case_id'], 'unexpected case identity')
+        store = plan.Store(root)
+        store.load(case.name)  # Full schema/hash/Markdown/confirmation chain.
+        for rev in store.revisions(case.name):
+            record = read(rev / 'plan.json')
+            if scenario.get('preserve_source'):
+                require(record['plan']['submission']['text'].rstrip('\r\n') == (work / 'source.txt').read_text(encoding='utf-8').rstrip('\r\n'), 'initial submission source was rewritten')
+            if record['status'] == 'finalized':
+                authorized = scenario.get('finalize_on_turn')
+                require(authorized is not None and turn_number >= authorized, 'unapproved finalization')
+                if scenario.get('finalizable'):
+                    require(matches_approval_target(record, scenario),
+                            'finalized plan differs from seeded approval target')
+                quote = record['confirmation']['quote'].strip()
+                require(len(quote) >= 8 and quote in scenario['turns'][authorized - 1], 'confirmation quote was not supplied by synthetic participant')
+            records.append(record)
+            current.update({prefix + rev.relative_to(root).as_posix() + '/' + name: digest
+                            for name, digest in files(rev).items()})
     for name, digest in previous.items():
         require(current.get(name) == digest, 'immutable revision changed: ' + name)
     if approved is not None:

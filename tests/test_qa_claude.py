@@ -289,6 +289,88 @@ class RunnerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unexpected store entry'):
             qa.inspect_records(work, {}, {})
 
+    def test_work_root_records_have_distinct_stable_history_keys(self):
+        work = self.root / 'save-refusal/work'
+        payload = qa.plan.template(linked=True)
+        qa.plan.Store(work / '.sparker-discovery').write('case', 'new', plan=payload)
+        store = qa.plan.Store(work)
+        store.write('case', 'new', plan=payload)
+        before, records = qa.inspect_records(work, {'expected_case_id': 'case'}, {})
+        self.assertEqual(len(records), 2)
+        self.assertEqual(set(before), {
+            'case/r000001/plan.json', 'case/r000001/plan.md',
+            '@work/case/r000001/plan.json', '@work/case/r000001/plan.md'})
+        store.write('case', 'update', plan=payload, expected=1, reason='synthetic update')
+        after, records = qa.inspect_records(work, {}, before)
+        self.assertEqual(len(records), 3)
+        self.assertTrue(all(after[key] == value for key, value in before.items()))
+        with self.assertRaisesRegex(ValueError, 'approved revision set changed'):
+            qa.inspect_records(work, {}, before, approved=before)
+        self.assertEqual(qa.inspect_records(work, {}, after)[0], after)
+
+    def test_work_root_corruption_and_removed_history_fail(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work)
+        store.write('case', 'new', plan=qa.plan.template(linked=True))
+        before, _ = qa.inspect_records(work, {}, {})
+        markdown = work / 'case/r000001/plan.md'
+        original = markdown.read_bytes()
+        markdown.write_bytes(b'corrupt')
+        with self.assertRaisesRegex(qa.plan.PlanError, 'Markdown/JSON'):
+            qa.inspect_records(work, {}, before)
+        markdown.write_bytes(original)
+        qa.shutil.rmtree(work / 'case/r000001')
+        with self.assertRaisesRegex(ValueError, 'immutable revision changed'):
+            qa.inspect_records(work, {}, before)
+        (work / 'case').rmdir()
+        with self.assertRaisesRegex(ValueError, 'immutable revision changed'):
+            qa.inspect_records(work, {}, before)
+
+    def test_work_root_save_refusal_source_and_identity_checks_remain_strict(self):
+        work = self.root / 'save-refusal/work'
+        payload = qa.plan.template(linked=True)
+        payload['submission'] = {'text': 'Different synthetic source', 'source': 'source.txt'}
+        payload['facts'] = []
+        qa.plan.Store(work).write('case', 'new', plan=payload)
+        with self.assertRaisesRegex(ValueError, 'save refusal violated'):
+            qa.inspect_records(work, {'no_store': True}, {})
+        with self.assertRaisesRegex(ValueError, 'unexpected case identity'):
+            qa.inspect_records(work, {'expected_case_id': 'other-case'}, {})
+        with self.assertRaisesRegex(ValueError, 'initial submission source was rewritten'):
+            qa.inspect_records(work, {'preserve_source': True}, {})
+
+    def test_work_root_detection_is_shallow_and_revision_entries_are_validated(self):
+        work = self.root / 'save-refusal/work'
+        # An unrelated directory is not treated as a store or searched deeply.
+        qa.plan.Store(work / 'scratch').write('case', 'new', plan=qa.plan.template(linked=True))
+        self.assertEqual(qa.inspect_records(work, {}, {}), ({}, []))
+        malformed = work / 'broken-case'
+        malformed.mkdir()
+        (malformed / 'r000001').write_text('not a revision directory')
+        with self.assertRaisesRegex(qa.plan.PlanError, '리비전 경로 오류'):
+            qa.inspect_records(work, {}, {})
+        (malformed / 'r000001').unlink()
+        (malformed / 'r000001').mkdir()
+        with self.assertRaises((qa.plan.PlanError, OSError)):
+            qa.inspect_records(work, {}, {})
+
+    def test_work_root_does_not_follow_case_or_revision_symlinks(self):
+        work = self.root / 'save-refusal/work'
+        outside = self.root.parent / 'outside-store'
+        qa.plan.Store(outside).write('case', 'new', plan=qa.plan.template(linked=True))
+        linked = work / 'case'
+        try:
+            linked.symlink_to(outside / 'case', target_is_directory=True)
+        except OSError:
+            self.skipTest('Directory symlinks are unavailable for this account')
+        with self.assertRaisesRegex(ValueError, 'unexpected work entry'):
+            qa.inspect_records(work, {}, {})
+        linked.unlink()
+        linked.mkdir()
+        (linked / 'r000001').symlink_to(outside / 'case/r000001', target_is_directory=True)
+        with self.assertRaises(qa.plan.PlanError):
+            qa.inspect_records(work, {}, {})
+
     def test_scratch_does_not_bypass_revision_corruption_or_deletion(self):
         work = self.root / 'save-refusal/work'
         store = qa.plan.Store(work / '.sparker-discovery')
