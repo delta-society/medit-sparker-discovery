@@ -1,0 +1,12 @@
+{
+  "name": "sparker-pdf-assets",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "node build.mjs"},
+  "dependencies": {
+    "mermaid": "11.17.2",
+    "markdown-it": "15.0.1",
+    "@fontsource-variable/noto-sans-kr": "5.3.0"
+  },
+  "devDependencies": {"esbuild": "0.28.2"}
+}

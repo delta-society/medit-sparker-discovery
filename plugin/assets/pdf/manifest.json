@@ -1,0 +1,270 @@
+{
+  "format": 1,
+  "versions": {
+    "@braintree/sanitize-url": {
+      "version": "7.1.2",
+      "license": "MIT"
+    },
+    "@fontsource-variable/noto-sans-kr": {
+      "version": "5.3.0",
+      "license": "OFL-1.1"
+    },
+    "@iconify/utils": {
+      "version": "3.1.7",
+      "license": "MIT"
+    },
+    "@mermaid-js/parser": {
+      "version": "1.2.1",
+      "license": "MIT"
+    },
+    "@upsetjs/venn.js": {
+      "version": "2.0.0",
+      "license": "MIT"
+    },
+    "cose-base": {
+      "version": "1.0.3",
+      "license": "MIT"
+    },
+    "cytoscape": {
+      "version": "3.34.3",
+      "license": "MIT"
+    },
+    "cytoscape-cose-bilkent": {
+      "version": "4.1.0",
+      "license": "MIT"
+    },
+    "cytoscape-fcose": {
+      "version": "2.2.0",
+      "license": "MIT"
+    },
+    "d3": {
+      "version": "7.9.0",
+      "license": "ISC"
+    },
+    "d3-array": {
+      "version": "3.2.4",
+      "license": "ISC"
+    },
+    "d3-axis": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "d3-brush": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "d3-chord": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-color": {
+      "version": "3.1.0",
+      "license": "ISC"
+    },
+    "d3-contour": {
+      "version": "4.0.2",
+      "license": "ISC"
+    },
+    "d3-delaunay": {
+      "version": "6.0.4",
+      "license": "ISC"
+    },
+    "d3-dispatch": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-drag": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "d3-dsv": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-ease": {
+      "version": "3.0.1",
+      "license": "BSD-3-Clause"
+    },
+    "d3-fetch": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-force": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "d3-format": {
+      "version": "3.1.2",
+      "license": "ISC"
+    },
+    "d3-geo": {
+      "version": "3.1.1",
+      "license": "ISC"
+    },
+    "d3-hierarchy": {
+      "version": "3.1.2",
+      "license": "ISC"
+    },
+    "d3-interpolate": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-path": {
+      "version": "3.1.0",
+      "license": "ISC"
+    },
+    "d3-polygon": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-quadtree": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-random": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-sankey": {
+      "version": "0.12.3",
+      "license": "BSD-3-Clause"
+    },
+    "d3-scale": {
+      "version": "4.0.2",
+      "license": "ISC"
+    },
+    "d3-scale-chromatic": {
+      "version": "3.1.0",
+      "license": "ISC"
+    },
+    "d3-selection": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "d3-shape": {
+      "version": "3.2.0",
+      "license": "ISC"
+    },
+    "d3-time": {
+      "version": "3.1.0",
+      "license": "ISC"
+    },
+    "d3-time-format": {
+      "version": "4.1.0",
+      "license": "ISC"
+    },
+    "d3-timer": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-transition": {
+      "version": "3.0.1",
+      "license": "ISC"
+    },
+    "d3-zoom": {
+      "version": "3.0.0",
+      "license": "ISC"
+    },
+    "dagre-d3-es": {
+      "version": "7.0.14",
+      "license": "MIT"
+    },
+    "dayjs": {
+      "version": "1.11.23",
+      "license": "MIT"
+    },
+    "delaunator": {
+      "version": "5.1.0",
+      "license": "ISC"
+    },
+    "dompurify": {
+      "version": "3.4.15",
+      "license": "(MPL-2.0 OR Apache-2.0)"
+    },
+    "entities": {
+      "version": "8.1.0",
+      "license": "BSD-2-Clause"
+    },
+    "es-toolkit": {
+      "version": "1.52.0",
+      "license": "MIT"
+    },
+    "fastdom": {
+      "version": "1.0.12",
+      "license": "MIT"
+    },
+    "internmap": {
+      "version": "2.0.3",
+      "license": "ISC"
+    },
+    "katex": {
+      "version": "0.16.47",
+      "license": "MIT"
+    },
+    "khroma": {
+      "version": "2.1.0"
+    },
+    "layout-base": {
+      "version": "1.0.2",
+      "license": "MIT"
+    },
+    "linkify-it": {
+      "version": "6.1.0",
+      "license": "MIT"
+    },
+    "lodash-es": {
+      "version": "4.18.1",
+      "license": "MIT"
+    },
+    "markdown-it": {
+      "version": "15.0.1",
+      "license": "MIT"
+    },
+    "marked": {
+      "version": "16.4.2",
+      "license": "MIT"
+    },
+    "mdurl": {
+      "version": "2.1.0",
+      "license": "MIT"
+    },
+    "mermaid": {
+      "version": "11.17.2",
+      "license": "MIT"
+    },
+    "punycode.js": {
+      "version": "2.3.1",
+      "license": "MIT"
+    },
+    "robust-predicates": {
+      "version": "3.0.3",
+      "license": "Unlicense"
+    },
+    "roughjs": {
+      "version": "4.6.6",
+      "license": "MIT"
+    },
+    "stylis": {
+      "version": "4.4.0",
+      "license": "MIT"
+    },
+    "ts-dedent": {
+      "version": "2.3.0",
+      "license": "MIT"
+    },
+    "uc.micro": {
+      "version": "3.0.0",
+      "license": "MIT"
+    },
+    "uuid": {
+      "version": "14.0.2",
+      "license": "MIT"
+    }
+  },
+  "sha256": {
+    "render.js": "5a5b2226c01d6466f65b9e58dbab792c4fd5b0901b0d8fa9a1144577f8b80d5e",
+    "fonts.css": "fab82c039682d8e64a9445b2a3da5824e3a81026f21ccc4ec56acd6939901ea6",
+    "print.css": "f59efdb325fdeedaa3611a1040ffa316b3fbd241db2d5e11d3e70e5f5c1b1d0e",
+    "THIRD_PARTY_NOTICES.md": "b3837660063633571e3f11f1dc9b7f705f17270e6d3eda3a4c3e8385a70cc911"
+  }
+}

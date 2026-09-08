@@ -1,0 +1,6 @@
+# Keep package text stable across Windows/macOS checkouts.
+* text=auto eol=lf
+*.pdf binary
+*.zip binary
+# Historical fixtures are byte-level evidence, never normalize their content.
+plugin/tests/fixtures/** -text
