@@ -557,12 +557,12 @@ def main(argv=None):
     val = sub.add_parser("validate")
     val.add_argument("--input", required=True)
     val.add_argument("--complete", action="store_true")
-    for action in ["new", "update", "save", "reject", "finalize", "reopen", "show", "resume", "history", "export"]:
+    for action in ["new", "update", "save", "reject", "finalize", "reopen", "show", "resume", "history", "export", "pdf"]:
         cmd = sub.add_parser(action)
         cmd.add_argument("case_id")
         if action in ["new", "update", "save"]:
             cmd.add_argument("--input", required=True, help="plan 객체 JSON, record 전체가 아님")
-        if action in ["update", "save", "reject", "finalize", "reopen"]:
+        if action in ["update", "save", "reject", "finalize", "reopen", "pdf"]:
             cmd.add_argument("--expected-revision", required=True, type=int)
         if action in ["update", "save", "reject", "reopen"]:
             cmd.add_argument("--reason", required=True)
@@ -589,6 +589,9 @@ def main(argv=None):
                 result = [{"revision": (r := read_json(path / "plan.json"))["revision"],
                            "status": r["status"], "event": r["event"], "created_at": r["created_at"]}
                           for path in store.revisions(args.case_id)]
+            elif args.command == "pdf":
+                from pdf_export import export_pdf
+                result = export_pdf(store, args.case_id, args.expected_revision)
             elif args.command == "export":
                 result = {"exported": str(store.export(args.case_id, args.output))}
             else:
@@ -602,6 +605,8 @@ def main(argv=None):
                 result = {"case_id": record["case_id"], "revision": record["revision"], "status": record["status"],
                           "plan_sha256": record["plan_sha256"],
                           "directory": str(store.case_path(args.case_id) / f"r{record['revision']:06d}")}
+                if args.command == "finalize":
+                    result["pdf"] = {"status": "not_requested", "revision": record["revision"]}
         print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
         return 0
     except (PlanError, OSError, ValueError, TypeError, KeyError) as exc:

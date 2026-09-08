@@ -21,7 +21,7 @@
 - `.gitattributes`로 소스·번들 문서의 LF checkout을 지정하고 과거 fixture는 `-text`로 원본 바이트를 보존한다. 아직 기존 파일 전체를 renormalize하지 않았다.
 - 테스트 소비자는 subprocess의 UTF-8을 명시적으로 decode한다. CP1252/CP949/ASCII 파이프를 강제한 CLI 검사, 한글·공백·& 경로, BOM 입력, 한글·공백 폴더에 해제한 ZIP 실행을 검사한다.
 - 파일 경로의 symlink/junction 거부 정책은 유지한다. Python 3.9~3.11은 `Path.is_junction`이 없어 junction 검사가 제한되므로 새 교육 환경에는 Python 3.12 이상을 권장한다. [Python isjunction 도입](https://docs.python.org/3/library/os.path.html#os.path.isjunction).
-- Camp helper와 선택 세션 검증도 현재 후보에 포함되어 있다. 0.5.1은 원문 보존과 오류 뒤 제출 범위 변경 지침을 보완했다. PDF 내보내기는 포함하지 않는다.
+- Camp helper와 선택 세션 검증도 포함되어 있다. 원문 보존과 오류 뒤 제출 범위 변경 지침의 실제 대화 검증은 별도 live QA 보고서를 따른다. 병합된 PDF 내보내기는 사용자 선택 사항이며 기존 Camp/기획 대화 QA 결과를 PDF 검증으로 확대하지 않는다. PDF 근거는 [PDF 내보내기](pdf-export.md)를 따른다.
 
 ## 자동 검증 구성
 
@@ -43,6 +43,6 @@ PowerShell 5.1의 기본 리다이렉션은 UTF-16LE를 만들 수 있으므로 
 
 ## 남은 실제 QA
 
-배포할 Claude Code 버전과 Python 버전을 기록하고 같은 합성 업무로 실제 모델 대화를 진행한다. Windows에서는 Bash/PowerShell 선택을 기록한다. 신규 시작→원문 선반영→KPI 수정/거절→확정→종료→재개→내보내기, 저장 거절, 경로 인용을 확인한다. GitHub runner 테스트는 모델이 올바른 명령을 생성한다는 것을 증명하지 않는다.
+네이티브 실제 Claude 대화의 버전·소스·패키지 해시와 시나리오별 결과는 [live QA 검토](reviews/2026-09-08/NATIVE-LIVE-REVIEW.md)를 따른다. helper CI와 실제 대화 검증을 구분하고, 이전 후보의 PASS를 병합된 새 패키지의 전체 대화 PASS로 승계하지 않는다. 신규 시작→원문 선반영→KPI 수정/거절→확정→종료→재개→내보내기, 저장 거절, 경로 인용은 해당 실행에서 확인한 범위만 보고한다.
 
 OneDrive/회사 네트워크 드라이브, 기업 보안 프로그램의 파일 잠금, Windows ARM64, 긴 경로 정책, 실제 PowerShell 5.1과 Git Bash별 LLM 동작은 미검증이다. 발견되면 합성 fixture와 환경 정보를 남겨 재현하며 사용자 원문·인증 자료를 CI 로그로 보내지 않는다.

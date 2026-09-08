@@ -57,14 +57,13 @@ def stable_read(path, limit=MAX_FILE):
         opened = os.fstat(handle.fileno())
         data = handle.read(limit + 1)
         after = os.fstat(handle.fileno())
+    final = path.stat()
     key = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
-    # Windows/Python versions can expose different ctime semantics through stat
-    # and fstat. Compare each API's timestamps with itself, and cross-check the
-    # file identity separately so an unchanged rewritten file is not rejected.
-    identity = lambda s: (s.st_dev, s.st_ino)
-    require(len(data) == opened.st_size <= limit and
-            key(before) == key(path.stat()) and key(opened) == key(after) and
-            identity(before) == identity(opened),
+    # Windows Python 3.13 can expose creation time via stat and change time
+    # via fstat. Compare ctime within each API, retaining both change checks.
+    require(len(data) == before.st_size <= limit
+            and key(before) == key(final) and key(opened) == key(after)
+            and key(before)[:-1] == key(opened)[:-1],
             "읽는 동안 파일이 바뀌었습니다. 기록이 멈춘 뒤 다시 준비하세요: " + path.name)
     return data
 

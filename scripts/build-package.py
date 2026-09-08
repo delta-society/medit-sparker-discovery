@@ -6,9 +6,14 @@ import argparse,hashlib,json,zipfile
 # Exact release inputs: never discover files from a developer's working directory.
 PLUGIN_FILES = (
     '.claude-plugin/plugin.json', 'skills/plan/SKILL.md', 'skills/submit/SKILL.md',
+    'skills/onboarding/SKILL.md', 'skills/week1/SKILL.md',
+    'references/week1-experience.md',
     'references/conversation.md', 'references/data-contract.md',
     'references/implementation-example.md', 'references/objective-linkage.md',
     'references/kpi-design.md',
+    'scripts/pdf_browser.py', 'scripts/pdf_export.py', 'scripts/pdf_presentation.py',
+    'assets/pdf/render.js', 'assets/pdf/fonts.css', 'assets/pdf/print.css',
+    'assets/pdf/manifest.json', 'assets/pdf/THIRD_PARTY_NOTICES.md',
     'scripts/plan.py', 'scripts/linkage.py', 'scripts/submission.py',
     'scripts/example.py', 'scripts/kpi.py', 'scripts/portable.py', 'scripts/camp_submit.py',
 )
