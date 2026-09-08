@@ -20,12 +20,12 @@ Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위
 
 | 영역 | 최종 후보 실행 | 판정 / 보고서 |
 |---|---|---|
-| 원문 근거·주입 | linux-055-planning + 별도 retry | 충분 자료 2턴 PASS, 나머지 재검증 중; [의미 검토](LIVE-SEMANTICS.md) |
-| 저장/확정 거절·중단/재개 | linux-055-planning-retry | 범위 변경·확정 거절 3턴 PASS, 나머지 진행 중 |
+| 원문 근거·주입 | linux-055-planning + 별도 retry | 충분 자료 2턴 및 별도 retry 10턴 PASS; [의미 검토](LINUX-CONTROLS-REVIEW.md) |
+| 저장/확정 거절·중단/재개 | linux-055-planning-retry, linux-055-finalize | 제어 흐름 및 확정/내보내기 3턴 PASS; [검토](LINUX-CONTROLS-REVIEW.md) |
 | Camp 경계 입력 | linux-055-edges | 5종·10턴 PASS; [제출 대화](CAMP-LIVE-SEMANTICS.md) |
 | 실제 대화 ZIP→브라우저 | linux-055-camp, live-09-retry/live-10 | 2종·4턴 및 두 브라우저 왕복 PASS; [브라우저 검토](CAMP-BROWSER-REVIEW.md) |
-| Windows/macOS 네이티브 | native-07 실행 중 | 실행 차단 복구 확인; [네이티브 검토](NATIVE-LIVE-REVIEW.md) |
-| 활용 선택·목표 보존·일회성·주간 보고 | linux-055-reuse | Linux 진행 중, 네이티브 실행 중 |
+| Windows/macOS 네이티브 | native-07 + native-08 | 양 OS Camp 24턴·확정 6턴, Windows 기획 12턴 PASS. macOS 기획 재시험·양 OS 활용 선택 진행 중; [네이티브 검토](NATIVE-LIVE-REVIEW.md) |
+| 활용 선택·목표 보존·일회성·주간 보고 | linux-055-reuse + retry | Linux 4종·9턴 PASS, 양 OS 결과 검토 중; [검토](LINUX-055-REUSE-REVIEW.md) |
 
 초기 실패 실행은 삭제하거나 성공 실행과 합치지 않는다. 구조 실행기의 `NOT_REVIEWED` 값도 그대로 보존하고, 각 검토 문서에서 발화·도구 호출·저장 리비전·파일 해시를 대조한 의미 판정을 별도로 제공한다.
 
@@ -46,3 +46,5 @@ Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위
 복구 관측: 이후 e181e00 소스의 호환성 CI [34197474831](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197474831)과 [34197469479](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197469479)가 실제로 실행되어 성공했다. 이에 3a13754에서 최종 0.5.5의 [native-07 실제 대화 시험](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197747230)을 시작했다. 운영 결제 설정을 이 작업에서 변경한 것은 아니며, 실행 차단의 해소만 관측했다.
 
 검사기 보완 중: 실패한 `new` 명령이 남긴 빈 폴더를 유효 리비전으로 간주하던 문제는 ba4afd4에서 보완하고 43개 검사기 테스트를 통과했다. 별도로 native-07 macOS planning은 문서가 허용한 작업 폴더 직접 저장에 성공했으나, 기본 숨김 폴더만 읽는 수집기가 저장을 놓쳐 중단됐다. 이 실행은 제품 저장 실패나 전체 PASS로 기록하지 않는다. 승인된 작업 폴더의 직계 과제 저장도 전체 Store 검증을 적용하도록 보완했다. 두 저장 위치의 이력 키를 구분하고 삭제·손상·저장 거절·승인 집합 변경·심볼릭 링크 차단을 확인한 검사기 회귀 48개가 통과했다. macOS의 미완료 네 사례는 native-08 별도 실행으로 재검증한다.
+
+DEL-490은 같은 0.5.5 후보의 양 OS Camp 24턴, Linux 경계 10턴·ZIP 준비 4턴과 두 Chromium 왕복의 독립 검토를 완료하여 Done 처리했다. 나머지 실행의 진행 상태와 구분한다. 사용자 요청에 따라 시작한 `linux-055-sonnet5`는 후속 Haiku 4.5 선택으로 중단했다. 부분 증거는 보존하고 PASS를 부여하지 않는다. 새 `linux-055-haiku45`는 `claude-haiku-4-5-20251001`에서 핵심 활용 선택 3턴을 시험하며 기존 Sonnet 4.6 결과와 별도로 기록한다. 전체 OS 시험을 새 모델로 반복한 것은 아니다. 이후 새 Claude 대화 호출은 사용자 지정 Haiku 4.5를 사용한다.
