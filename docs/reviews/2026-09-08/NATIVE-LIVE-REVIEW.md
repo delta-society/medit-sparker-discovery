@@ -135,3 +135,68 @@ GitHub 실행 `34195413508`, 소스 `15bebb476fde24ac44fbec248c675f12a53f9f35`, 
 - 턴 소요 시간은 약 41.23초 / 221.02초 / 9.40초였다. T2에서 helper 옵션·검증 입력 형식 오류와 case 폴더 안 확인용 임시 파일 때문에 재시도했으며, 자신이 만든 임시 파일을 제거한 뒤 정상 finalize helper로 회복했다. 리비전·플러그인 수정으로 검사를 우회하지 않았다.
 
 이 실행은 **0.5.2 macOS 확정·재개·내보내기 3턴 PASS**다. 이번에는 objective 확인 quote도 변경하지 않았으므로 실행기의 좁은 quote 정규화 예외를 네이티브 실사용으로 검증한 결과는 아니다. 그 분기는 앞 절의 회귀 테스트로 검증했으며 native-04 오거부 기록도 보존한다. 221초 확정 지연과 반복 도구 오류는 수업 사용성의 한계로 남는다. 실제 참가자의 MacBook 리허설 또는 이후 0.5.3 후보의 행동 검증으로 확대 해석하지 않는다.
+
+
+## 0.5.5 native-07 planning — macOS 부분 실행 검토
+
+GitHub 실행 `34197747230`, 소스 `3a13754e88ae3d7953ceb2b43d1ee26b89f253c9`, 아티팩트 `live-qa-macos-15-planning`을 검토했다. ZIP SHA-256 `49578b41bd10617837a76c0ca7edfd5355bf0b918cabe0b8ae7c269614883037`, 실행기 `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`, Darwin 24.6.0 arm64 / Claude Code 2.1.263 / Sonnet 4.6이다. 증거 루트는 `/tmp/discovery-live-qa/native-07/live-qa-macos-15-planning/`이다. 이 planning 그룹은 sufficient-source 2턴, unknown-kpi 2턴, change-reject 3턴, save-refusal 2턴, stop-resume 3턴을 대상으로 한다.
+
+sufficient-source 2턴의 실제 입력·응답·도구 인수·저장 records를 대조했다. 최초 원문을 그대로 보존하고 r1→r2 draft를 유지하며, 누락 작업코드 발견 목표를 반영한 뒤 누락 방향만 질문했다. 제안 KPI에는 confirmation이 없고 원문 사실과 활용 가설을 구분했다. 빈 구현·시험 항목은 초기 기획 단계의 미완료로 남았다. 저장 plan hash와 schema를 독립 검증했다. 시간은 145.16/102.80초다.
+
+unknown-kpi T2 이후 실행기는 `expected saved revisions missing`으로 중단했다. T1/T2의 정상 helper new/show/update는 모두 `--root ".../unknown-kpi/work"`를 사용하여 기본 `.sparker-discovery` 대신 작업 폴더 바로 아래 `case-stdv01/r000001`, `r000002`에 저장했다. helper 성공 receipt와 T2 show의 revision 1 조회를 확인했고, Write 및 Edit에서 재구성한 plan SHA-256은 각각 `9676d9c9d2255c014f15d508790cec7f4cae2d0fbdb15fd768f94591d23c25b8`, `8202c6a560fd9ad664bce945bc4fe27503b0876828fe71be74001a32fb6a6357`로 receipt와 같았다. KPI 현재값·목표값은 unknown/null로 남았고 E1 편차 확인·E2 라인장 검토 계기는 미래 기록 제안으로 표시했다. 외부 연결·자동 확정은 실행하지 않았다.
+
+실행기와 수집기는 `.sparker-discovery`만 검사하므로 두 턴 records가 비었다. data-contract의 helper 예시는 승인한 로컬 폴더를 root로 받으며 SKILL의 숨김 폴더는 기본값이므로, 이 실패를 곧바로 제품 저장 실패나 허위 성공으로 집계하지 않는다. 다만 모델은 저장 전에 구체 위치를 안내하지 않고 저장 뒤 축약 경로를 알렸다. 실제 대체 root의 JSON/Markdown 파일이 다운로드 아티팩트에 없으므로 완전한 저장 파일 독립 검증 PASS도 주장하지 않는다. 원래 실패 상태를 유지하며 미실행 change-reject/save-refusal/stop-resume 8턴은 별도 새 실행이 필요하다.
+
+
+### native-07 Windows planning — 5케이스 12턴 제어·의미 검토 PASS
+
+같은 소스·0.5.5 ZIP·실행기의 `live-qa-windows-2022-planning` 아티팩트를 `/tmp/discovery-live-qa/native-07/live-qa-windows-2022-planning/`에서 검토했다. 실제 입력·최종 응답·전체 도구 인수·records를 대조했고 모든 저장 plan의 schema/hash 및 원문 보존을 독립 확인했다.
+
+- sufficient-source: 원문을 다시 묻지 않고 활용 가설 두 가지를 제안했다. 후속 누락 작업코드 목표를 반영해 r2 draft로 저장하고, 누락 방향을 미확인 질문으로 남겼다. 코드 역할·시험·구현은 누락 대조 중심이다.
+- unknown-kpi: 두 턴 모두 objective unknown/null을 유지했다. 편차 표시 완료·라인장 검토 완료·ST 기준값 수정의 기록 계기 A/B/C를 `ai_hypothesis`로 구분하고 실제 기록 여부는 확인 과제로 남겼다.
+- change-reject: ST 편차 수치 계산·분석을 non_goals로 이동하고 selected_change·역할·시험·구현·연결을 누락 코드 발견으로 변경했다. T3은 도구 호출 없이 draft 상태를 유지했고 T2/T3 records가 완전히 같았다.
+- save-refusal: T1은 제공된 source와 참조 문서만 읽었고 T2는 도구 호출이 없었다. 두 턴 records=[]이며 저장·확정하지 않았다.
+- stop-resume: 중단 시 경로·draft와 다음 질문만 알렸고, 재개 시 정상 resume helper로 같은 r1을 읽었다. 세 턴 records가 같고 원문 사실 재질문은 없었다.
+
+새 P1/P2는 발견하지 않았다. 미확정 KPI의 정의·방향 정밀화, 결과 기록 위치의 절대 경로 안내, 제외한 편차·이상치 기능의 포함 여부를 다시 묻는 응답 정합성은 개선 여지가 있다. 특히 change-reject T2의 assistant text와 최종 result에 각각 U+FFFD 대체 문자 10개가 있어 일부 한국어가 깨졌다. 저장 records에는 대체 문자가 없고 원문도 정상이다. 수집기는 전체 stdout 바이트를 UTF-8 `errors=replace`로 변환하며 원시 바이트를 보존하지 않으므로, 실제 잘못된 바이트인지 CLI/모델이 출력한 문자 자체인지 원인을 확정하지 않는다. 표시·전송 한계로 보존하며 저장 손상으로 집계하지 않는다.
+
+첫 응답은 71.34–127.12초, 중단 요약은 6.00초, 재개는 15.03초였다. 이 PASS는 위 기획 계약 12턴에 한정되며, macOS 미완료 케이스·실제 참가자 리허설·매끄러운 수업 사용성 전체를 뜻하지 않는다.
+
+## 0.5.5 native-07 — 양 OS Camp·finalize 30턴 독립 검토
+
+GitHub 실행 `34197747230`의 `live-qa-{windows-2022,macos-15}-{camp,finalize}` 네 아티팩트를 `/tmp/discovery-live-qa/native-07/`에 내려받아 검토했다. 네 아티팩트 각각의 source.json·manifest.json·state.json에서 소스 `3a13754e88ae3d7953ceb2b43d1ee26b89f253c9`, 패키지 SHA-256 `49578b41bd10617837a76c0ca7edfd5355bf0b918cabe0b8ae7c269614883037`, 실행기 SHA-256 `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`를 확인했다. 이후 수집기 수정 후보의 실행으로 바꾸어 기록하지 않는다.
+
+모델은 `claude-sonnet-4-6`, CLI는 `2.1.263`이다. Windows는 `2022Server` / `AMD64`, macOS는 Darwin `24.6.0` / `arm64`, 모두 disposable-vm 및 한글·공백 작업 경로다. CLI binary SHA는 Windows `7999fba95dbffe167d9e0a043f29057979a0518ebe89b60c4fcfc6401ea8c424`, macOS `ef5d2909c8af49f31ab6d5487e90316777bc2fac170adfe8160716caa8aaf4f9`다.
+
+| 그룹 | 실제 검토 범위 | 판정 |
+|---|---|---|
+| Windows finalize | 3턴 | 승인 대상 유지·확정·재개·동일 내보내기 PASS |
+| macOS finalize | 3턴 | 승인 대상 유지·확정·재개·동일 내보내기 PASS |
+| Windows Camp | 6사례 12턴 | 원본 선택·초안 유지·준비/업로드 구분 PASS |
+| macOS Camp | 6사례 12턴 | 위 파일 계약 PASS, 앱 상태 표시 추측 문구는 아래 별도 관찰 |
+
+전체 30턴의 입력·최종 응답·도구 인수를 읽고 실제 helper 결과, records, state를 대조했다. 각 입력은 manifest 발화와, 실제 session/model ID는 해당 manifest와 일치했다. 자동 semantic_status는 NOT_REVIEWED 그대로 두며 이 문서에서 독립 판단을 기록한다.
+
+### finalize: 승인 후 설계 변경 없음
+
+양 OS 모두 T1은 r1 초안을 요약하고 확정을 보류했다. T2는 합성 참가자의 확인 발화 전체를 정확히 기록해 r1을 대상으로 r2를 확정했다. 최초·후속 plan 전체가 동일하며 SHA-256 `b14f2012373c6107a9ddef1b82ac3563a68d65f622dfa96866ff1fd60669f451`을 유지했다. objective 확인 quote 예외도 사용하지 않았다. `validate_confirmation`을 별도로 실행해 대상 리비전·해시·확인 범위를 검증했다. 과거 Windows의 승인 후 measurement 설계 추가는 재현되지 않았다.
+
+T3에는 현재 확정본 조회와 export helper의 실제 성공 결과가 있다. T2/T3 records 전체 및 state의 approved_revision_files/revision_files가 같고 재개방·계획 수정이 없다. 두 확정 기록의 렌더링 SHA는 `003ae6cf58f437a1e20f90f52bbe324ae3e51c915836f3eb18002ff348c87ae1`이다. 다운로드 아티팩트에 export 파일 자체가 없으므로 직접 파일 바이트 대조를 했다는 뜻은 아니다. 실제 export 결과와 실행기의 로컬 파일 바이트 검사 PASS를 함께 확인했다.
+
+Windows 턴별 시간은 약 65.70 / 142.47 / 17.85초, macOS는 45.04 / 175.62 / 8.77초였다. 양쪽 모두 초기 validate 인수·record와 plan 입력 구분 오류에서 회복했다. macOS는 case 안에 만든 확인 임시 파일을 정상 helper가 거부하자 자신이 만든 그 파일을 삭제하고 작업 루트의 확인 파일로 성공했다. 리비전이나 플러그인 수정 우회는 없었다. 이 지연·반복 오류는 수업 사용성의 제한으로 남는다.
+
+### Camp: 정확한 선택과 준비 결과 유지
+
+양 OS 12사례에서 T1 prepare와 T2 inspect의 SHA 및 전체 manifest가 같다. 모든 records는 동일 draft r1이다. 기획서만·원본 거절·초안·미업로드 사례의 선택 세션은 0개, 나머지는 입력의 정확한 UUID 1개 또는 2개다. ZIP manifest의 plan.md 및 각 JSONL 해시는 준비 입력 manifest의 대응 원본 해시와 모두 일치한다. 자동 확정·범위 확대·실제 앱 업로드 도구 호출은 없었다.
+
+| 입력 종류 | Windows ZIP SHA-256 | macOS ZIP SHA-256 |
+|---|---|---|
+| 기획서만 4사례 | `0dccb57ca7e4c972ab0bce46c1123c96057e57dcc02310a85deaf3d49f6c4fa2` | 같은 해시 |
+| 선택 세션 1개 | `2cdc878cdff021712a7f969404e26f8c74ba5d549f1e4c3ee808cf409965476c` | `30368bb8f44365c9bbeed295b5aa4275d0e72a5171977db081a04613936908fb` |
+| 선택 세션 2개 | `bc246a8a9f0673cf1583aaabb52e069479c3aa035aa352325fae0288ca2dd0a8` | `b040ba1f8428891c0823a70692a8b206a68c5420b361901a69e59cde98ee7b4f` |
+
+선택 UUID는 Windows 단일 `d0159ba7-c5c2-47e2-9a7c-eda68e3012c7`, 복수 `a309d657-c885-4539-88f4-585019d6263c`/`35a167af-e251-4346-afca-c56eb0dc03c8`, macOS 단일 `d335b6eb-83b2-4ab9-b5b8-9d8c94704f95`, 복수 `0998b39e-17b0-40fa-a709-a75d29c036b2`/`ccbd807b-493e-4290-991a-58c4fafdf057`다. 원본 ZIP 자체를 수집하지 않은 아티팩트이므로 이는 실제 helper 응답/수집기 검사와 입력 해시 대조이며 Linux 브라우저의 ZIP 직접 다운로드 검증과 구분한다.
+
+**P3 안내 관찰:** macOS `camp-refuse-raw` T1은 “기획서 상태가 미확정이므로 앱 화면에도 그렇게 표시될 수 있습니다.”라고 추측했다. 검토한 앱은 ZIP 내부 draft 상태를 해석하지 않으므로 근거 없는 기능 가능성 안내다. 실제 앱이 표시했다고 단정한 결과 보고는 아니며 파일 계약을 변경하지 않아 P2 실패로 확대하지 않았지만, 앱 안내 전체가 정확하다는 PASS도 부여하지 않는다. 초안 상태는 로컬 inspect/ZIP에서 확인해야 한다. Windows plan-only T1은 오히려 앱이 내부 상태를 자동 표시하지 않는다고 정확히 안내했다.
+
+일부 표의 “민감 정보 없음”은 possible_secrets 패턴 미탐지의 축약이며 개인정보·기밀 부재 보장이 아니다. 원본 선택 사례의 첫 응답은 패턴 검사 한계를 명시했다. 이 Camp 입력은 미업로드 사실을 참가자가 명시하므로 서버 상태가 불확실한 경계 시험을 대신하지 않는다. 위 30턴은 네이티브 VM의 해당 파일·승인 계약 검증이며 planning/reuse, 실제 참가자 기기, 운영 앱 권한·보관 정책까지 완료했다고 확대하지 않는다.
