@@ -58,7 +58,7 @@ class LifecycleTests(unittest.TestCase):
         self.temp.cleanup()
 
     def cli(self, *args, ok=True):
-        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.base / "cases"), *args], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.base / "cases"), *args], capture_output=True, text=True, encoding='utf-8')
         self.assertEqual(r.returncode, 0 if ok else 2, r.stdout + r.stderr)
         return json.loads(r.stdout if ok else r.stderr)
 
@@ -131,7 +131,7 @@ class LifecycleTests(unittest.TestCase):
         self.store.write("case-a", "new", plan=complete())
         inp = self.input_file("plan.json", complete())
         cmd = [sys.executable, str(SCRIPT), "--root", str(self.base / "cases"), "update", "case-a", "--input", inp, "--expected-revision", "1", "--reason", "concurrent synthetic test"]
-        processes = [subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(5)]
+        processes = [subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8') for _ in range(5)]
         results = [(proc.communicate(), proc.returncode) for proc in processes]
         self.assertEqual(sorted(r[1] for r in results), [0, 2, 2, 2, 2])
         self.assertEqual(self.store.load("case-a")["revision"], 2)

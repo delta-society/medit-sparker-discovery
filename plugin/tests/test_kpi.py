@@ -105,10 +105,10 @@ class KpiTests(unittest.TestCase):
             root=Path(tmp).resolve();p=plan.template();p['submission']={'text':'합성 KPI 시험','source':'fixture'};p['kpi']=sample()
             store=plan.Store(root/'cases');store.write('case-kpi','new',plan=p)
             inp=root/'cases/case-kpi/r000001/plan.json'
-            proc=subprocess.run([sys.executable,str(Path(kpi.__file__)),'evaluate','--input',str(inp),'--json'],capture_output=True,text=True)
+            proc=subprocess.run([sys.executable,str(Path(kpi.__file__)),'evaluate','--input',str(inp),'--json'],capture_output=True,text=True, encoding='utf-8')
             self.assertEqual(proc.returncode,0,proc.stderr)
             self.assertEqual(json.loads(proc.stdout)['status'],'increased')
-            self.assertIn('KPI 설정과 생산력', (inp.parent/'plan.md').read_text())
+            self.assertIn('KPI 설정과 생산력', (inp.parent/'plan.md').read_text(encoding='utf-8'))
 
 
 if __name__=='__main__': unittest.main()

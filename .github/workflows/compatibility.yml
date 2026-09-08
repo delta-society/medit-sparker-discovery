@@ -1,0 +1,47 @@
+name: Native OS compatibility
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  helpers:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python: '3.9'
+          - os: ubuntu-24.04
+            python: '3.13'
+          - os: windows-2022
+            python: '3.9'
+          - os: windows-2022
+            python: '3.13'
+          - os: macos-15
+            python: '3.13'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Helper and extracted-package regression tests
+        run: python -X utf8 -m unittest discover -s plugin/tests -v
+      - name: Synthetic AR regression tests
+        run: python -X utf8 -m unittest discover -s examples/germany-ar -p "test_*.py" -v
+      - name: QA runner transport regressions (no model credentials or calls)
+        run: python -X utf8 -m unittest discover -s tests -v
+      - name: Build release ZIP
+        run: python -X utf8 scripts/build-package.py --output qa-release.zip
+      - name: Git Bash smoke test on native Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: python -X utf8 "plugin/scripts/submission.py" --example standard-time --linked
+      - name: PowerShell smoke test on native Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: python -X utf8 "plugin/scripts/submission.py" --example standard-time --linked

@@ -36,7 +36,7 @@ class ProductTests(unittest.TestCase):
 
     def cli(self, *args, ok=True):
         result = subprocess.run([sys.executable, str(SCRIPT), '--root', str(self.store.root), *args],
-                                text=True, capture_output=True)
+                                text=True, capture_output=True, encoding='utf-8')
         self.assertEqual(result.returncode, 0 if ok else 2, result.stdout + result.stderr)
         return json.loads(result.stdout if ok else result.stderr)
 

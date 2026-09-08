@@ -18,6 +18,7 @@ import tempfile
 from datetime import datetime, timezone
 
 VERSION = 1
+MAX_JSON_BYTES = 2_000_000
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,63}\Z")
 RESERVED = {"con", "prn", "aux", "nul", *[f"com{i}" for i in range(1, 10)], *[f"lpt{i}" for i in range(1, 10)]}
 SCOPES = ["user_result", "selected_change", "acceptance_tests"]
@@ -75,8 +76,8 @@ def no_duplicates(pairs):
 def read_json(path):
     p = safe_path(path)
     require(p.is_file(), "JSON 파일이 없습니다: " + str(p))
-    require(p.stat().st_size <= 2_000_000, "JSON은 2MB 이하만 허용")
-    with p.open(encoding="utf-8") as handle:
+    require(p.stat().st_size <= MAX_JSON_BYTES, "JSON은 2MB 이하만 허용")
+    with p.open(encoding="utf-8-sig") as handle:
         return json.load(handle, object_pairs_hook=no_duplicates,
                          parse_constant=lambda x: (_ for _ in ()).throw(PlanError("비유한 수 금지")))
 
@@ -421,27 +422,32 @@ class Store:
         require([x.name for x in result] == [f"r{i:06d}" for i in range(1, len(result) + 1)], "리비전 연속성 오류")
         return result
 
+    def read_revision(self, path, case, index, last):
+        """Validate both files identically before publication and during resume."""
+        record = read_json(path / "plan.json")
+        obj(record, ["schema_version", "case_id", "revision", "status", "created_at", "plan", "plan_sha256", "previous_sha256", "event", "confirmation"], "record")
+        require(record["schema_version"] == VERSION and record["case_id"] == case and record["revision"] == index, "리비전 메타데이터 오류")
+        require(record["status"] in ["draft", "finalized"], "저장 상태 오류")
+        validate_plan(record["plan"], record["status"] == "finalized")
+        previous = digest(last) if last is not None else None
+        require(record["plan_sha256"] == digest(record["plan"]) and record["previous_sha256"] == previous, "리비전 해시 불일치")
+        if record["status"] == "finalized":
+            require(last is not None, "확정은 기존 초안에서만 가능")
+            validate_confirmation(record["confirmation"], last)
+        else:
+            require(record["confirmation"] is None, "초안에 유효 확인 기록 금지")
+        md = safe_path(path / "plan.md")
+        # Keep the existing renderer and immutable bytes, including literal CR.
+        # Text-mode universal newlines would falsely report these as corruption.
+        require(md.is_file() and md.read_bytes() == markdown(record).encode("utf-8"), "Markdown/JSON 불일치")
+        return record
+
     def load(self, case):
         revisions = self.revisions(case)
         require(bool(revisions), "저장된 과제가 없습니다")
-        previous = None
         last = None
         for index, path in enumerate(revisions, 1):
-            record = read_json(path / "plan.json")
-            obj(record, ["schema_version", "case_id", "revision", "status", "created_at", "plan", "plan_sha256", "previous_sha256", "event", "confirmation"], "record")
-            require(record["schema_version"] == VERSION and record["case_id"] == case and record["revision"] == index, "리비전 메타데이터 오류")
-            require(record["status"] in ["draft", "finalized"], "저장 상태 오류")
-            validate_plan(record["plan"], record["status"] == "finalized")
-            require(record["plan_sha256"] == digest(record["plan"]) and record["previous_sha256"] == previous, "리비전 해시 불일치")
-            if record["status"] == "finalized":
-                require(last is not None, "확정은 기존 초안에서만 가능")
-                validate_confirmation(record["confirmation"], last)
-            else:
-                require(record["confirmation"] is None, "초안에 유효 확인 기록 금지")
-            md = safe_path(path / "plan.md")
-            require(md.is_file() and md.read_text(encoding="utf-8") == markdown(record), "Markdown/JSON 불일치")
-            previous = digest(record)
-            last = record
+            last = self.read_revision(path, case, index, last)
         return last
 
     def write(self, case, action, plan=None, expected=None, reason=None, candidate=None, confirmation=None):
@@ -497,13 +503,16 @@ class Store:
                       "plan_sha256": digest(p), "previous_sha256": digest(old) if old else None,
                       "event": {"action": action, "reason": reason, "candidate_id": candidate},
                       "confirmation": copy.deepcopy(confirmation) if action == "finalize" else None}
+            record_json = json.dumps(record, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+            require(len(record_json.encode("utf-8")) <= MAX_JSON_BYTES, "저장 레코드는 메타데이터 포함 2MB 이하만 허용")
             pending = Path(tempfile.mkdtemp(prefix=".pending-", dir=case_path))
-            for name, content in [("plan.json", json.dumps(record, ensure_ascii=False, indent=2, allow_nan=False) + "\n"),
+            for name, content in [("plan.json", record_json),
                                   ("plan.md", markdown(record))]:
                 with (pending / name).open("x", encoding="utf-8", newline="\n") as handle:
                     handle.write(content)
                     handle.flush()
                     os.fsync(handle.fileno())
+            require(self.read_revision(pending, case, revision, old) == record, "공개 전 재검증 실패")
             target = safe_path(case_path / f"r{revision:06d}")
             require(not target.exists(), "리비전 덮어쓰기 금지")
             pending.rename(target)
@@ -600,4 +609,6 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    from portable import configure_stdio
+    configure_stdio()
     sys.exit(main())
