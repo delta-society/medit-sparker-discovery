@@ -23,6 +23,6 @@ AI Sparker 1기 상부구조 트랙 — 참가자 산출물에서 메디트가 �
 /plugin install sparker-discovery@sparker
 ```
 
-Claude Code를 다시 시작한 뒤 `/sparker-discovery:plan`을 실행합니다. Python 3.9 이상이 필요합니다. 기획서 확정 후 PDF 생성 여부를 선택하며, PDF를 만들 때만 Chrome 또는 Edge 중 하나가 필요합니다. 이미 설치되어 있다면 추가 설치·확장 프로그램·`/chrome` 설정은 필요 없습니다. 공개 저장소에서 설치하므로 별도 저장소 권한 요청은 필요하지 않습니다.
+Claude Code를 다시 시작한 뒤 처음에는 `/sparker-discovery:onboarding`, 1주차 실습은 `/sparker-discovery:week1`을 실행합니다. 첫 대화·CLAUDE.md·Skill 제작/실행·MCP 체험에서 업무 기획과 제출로 이어집니다. 기존 `plan`·`submit` 직접 호출도 유지합니다. 기획서 저장에는 Python 3.9 이상이 필요하며 첫 기능 체험에는 필수가 아닙니다. 기획서 확정 후 PDF 생성 여부를 선택하며, PDF를 만들 때만 Chrome 또는 Edge 중 하나가 필요합니다. 이미 설치되어 있다면 추가 설치·확장 프로그램·`/chrome` 설정은 필요 없습니다. 공개 저장소에서 설치하므로 별도 저장소 권한 요청은 필요하지 않습니다.
 
 설치·업데이트: [사용 안내](docs/plugin-guide.md). 플러그인과 예시·한글 글꼴·PDF 자산은 `plugin/` 안에 함께 배포됩니다.

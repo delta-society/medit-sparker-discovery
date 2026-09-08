@@ -20,10 +20,14 @@ Claude Code에서 GitHub 마켓플레이스를 등록하고 설치한다.
 설치 후 Claude Code를 다시 시작하고 자신의 로컬 실습 폴더에서 실행한다.
 
 ```text
-/sparker-discovery:plan
+/sparker-discovery:onboarding
 ```
 
-기존 제출문이나 파일 경로를 함께 주어도 된다. 예: `/sparker-discovery:plan 예시 weekly-report`. 예시는 `product-compliance`, `spec-policy`, `weekly-report`, `standard-time`이며 설치된 플러그인의 `examples/`에 포함된다.
+1주차 실습을 시작하거나 이어가려면 `/sparker-discovery:week1`을 실행한다. 첫 대화·CLAUDE.md → Skill 만들고 호출하기 → MCP 연결 상태와 활용 체험 → 나머지 핵심 기능·기초 → 내 업무 기획 → 참가자 앱 제출·Slack 다음 주 준비로 이어진다. 이미 한 단계는 반복하지 않고 “skill부터”, “mcp부터”, “기획만”, “제출부터”라고 말해 이동할 수 있다. 중간에 plan/submit 명령을 다시 입력할 필요는 없다.
+
+Skill 제작 체험은 실습 폴더의 `.claude/skills/sparker-practice/SKILL.md`를 만들고 `/sparker-practice`로 직접 실행한다. MCP 연결이 없으면 개념·연결 설계를 체험하며 실제 연결 성공으로 표시하지 않는다. Agent Teams·Hook 실제 설정은 선택 실습이다. 기능 체험만으로 회사 계정 연결이나 수집기 설정이 바뀌지 않는다. 첫 대화·Skill 체험은 Python 없이 가능하고, 기획서 파일 저장에는 Python 3.9 이상이 필요하다.
+
+기존 제출문이나 파일 경로를 함께 주어도 된다. 기획만 바로 할 때는 기존 `/sparker-discovery:plan`도 사용할 수 있다. 예: `/sparker-discovery:plan 예시 weekly-report`. 예시는 `product-compliance`, `spec-policy`, `weekly-report`, `standard-time`이며 설치된 플러그인의 `examples/`에 포함된다.
 
 업데이트는 터미널에서 다음을 실행하고 Claude Code를 다시 시작한다.
 
@@ -54,7 +58,7 @@ claude plugin update sparker-discovery@sparker
 
 질문은 객관식과 주관식을 섞는다. 선택 가능한 내용에는 번호 보기·기타 직접 입력·아직 모름을 주고, 실제 시간·업무 설명·예외는 짧게 직접 받는다. 번호만 답해도 되고 보기 밖의 자기 말로 답해도 된다. 한 번에 질문 하나이며 추가 설명은 선택이다.
 
-수정 ZIP 0.5.0를 이전 파일 대신 로드해 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
+플러그인을 업데이트한 뒤 새 Claude Code 세션을 시작한다. 기존 과제 기록 폴더는 지우지 않는다.
 
 ## 캠프 과제 제출
 
