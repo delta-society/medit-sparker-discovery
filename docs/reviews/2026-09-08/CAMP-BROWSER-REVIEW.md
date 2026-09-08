@@ -77,3 +77,37 @@
 두 브라우저 실행은 위 본문의 9개 항목을 다시 통과했다. 각 result.json에는 실제 브라우저 버전, 소스 검사 결과, 8개 checks, 최초/재제출 ID가 있다. source_guard는 tracked 소스가 고정 commit과 일치함을 확인했고, 유일한 생성 파일 예외 `next-env.d.ts`의 해시는 두 실행 모두 `0f70629890b72a0a82e91972cc032c04b658b26c265373cb711cf576bfbf8fcc`였다.
 
 최종 후보에서도 1주차 ZIP을 UI에서 2주차로 고르면 접수된다. 이는 동일한 앱 제한의 재확인이며 오제출 차단 기능이 생겼다는 뜻이 아니다. 참가자 다운로드 및 인증된 운영자 API 다운로드는 입력 SHA와 일치했다. 5 MiB 초과 업로드는 거부되고 이력이 추가되지 않았으며, 동일 ZIP 재제출은 별도 이력을 남겼다. 모든 실행은 자체 생성한 서버만 종료했고 운영 서비스·실제 사용자 계정은 사용하지 않았다.
+
+## 최종 0.5.3 패키지: linux-final-camp-02 → live-05/live-06
+
+이 절의 대상은 최종 패키지 SHA-256 `e9a78a4d49d117fa096e3e49154ae4caa5b2ab3a673f613dabeb7ada9cee616c`다. 중간 0.5.3 사전 실행이나 0.5.2 결과를 최종 후보의 증거로 승계하지 않았다.
+
+`/tmp/discovery-live-qa/runs/linux-final-camp-02/`의 실제 Claude 2종·4턴과 두 생성 ZIP을 검토한 뒤, 새 합성 참가자 앱 서버/DB에서 실제 Chromium 왕복을 실행했다. **두 대화의 제출 범위·원본 보존·준비/서버 제출 구분 및 브라우저 검사는 PASS**다. CLI `2.1.263`, 모델 `claude-sonnet-4-6`, 실행기 SHA-256 `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`다.
+
+| 실행 | 실제 모델 생성 ZIP | 크기 | 결과 |
+|---|---|---|---|
+| `/tmp/discovery-live-qa/browser/live-05/` | `0dccb57ca7e4c972ab0bce46c1123c96057e57dcc02310a85deaf3d49f6c4fa2` | 1,608 bytes, 기획서만 | PASS |
+| `/tmp/discovery-live-qa/browser/live-06/` | `8319cd9868cb99f1191dfaf4703b8c760c9e570ffa8adb196829cab1ab337999` | 2,447 bytes, 기획서와 2개 원본 | PASS |
+
+두 번째 ZIP의 선택 UUID는 `aa03bd3a-e5fa-44ec-b5c4-2adb4032bb1a`, `c4966a51-36d8-4434-83be-94bc74d94e16`이다. 모든 입력 해시가 manifest와 일치했고, ZIP 기획서는 r1 plan.md와, 선택한 두 JSONL은 각 원본과 바이트 단위로 같았다. 실제 도구는 각 첫 턴에 prepare, 두 번째 턴에 inspect를 수행했다. 재검사 SHA는 준비 시 결과와 일치했다. 자동 확정·업로드는 없었다.
+
+문구상 관찰: 복수 세션 첫 응답의 한 문장은 '확정하지 않고 제출했습니다'라고 표현했다. 같은 응답 제목이 로컬 준비임을 명시하고 별도 앱 업로드/기록 확인 절차를 설명했으며, 다음 턴에도 미업로드 상태를 명시했다. 전체 응답을 서버 제출 성공 주장으로 해석하지 않아 차단 결함으로 판정하지 않았지만, 그 한 문장 역시 '준비했습니다'로 표현하는 것이 정확하다.
+
+두 브라우저의 실제 버전은 `151.0.7922.34`다. 앱 commit `439d2ba491cef5f2a4c01947a03a1577491672d9`와 tracked 소스 일치 검사, 생성 파일 예외 해시 기록을 통과했다. result.json의 8개 검사는 UI 활성화, 업로드/새로고침 유지, 참가자 다운로드 전체 SHA/manifest, 인증된 운영자 다운로드 SHA, 재제출 이력, 5 MiB 초과 거부, 잘못된 주차 동작 관측, 사용량 불변을 포함한다. 두 결과 폴더에 result.json·downloaded.zip·submission-history.png를 남겼다.
+
+주차 불일치 접수는 여전히 앱의 제한이다. 운영 서버에 올린 시험이 아니며 운영자 검증은 API 다운로드다. 이 후보 결과를 운영 환경·실제 참가자 원본·모든 브라우저의 보장으로 확대하지 않는다.
+
+## 0.5.4 후보: linux-054-camp → live-07/live-08
+
+패키지 SHA-256 `dfc56e99a82a064d7368d9e46153e3cbd4ed0da1e6ba079fe24cbeeaf0e9b5b0`으로 실제 Claude가 생성한 두 ZIP을 새 Chromium 실행으로 검증했다. `/tmp/discovery-live-qa/runs/linux-054-camp/`의 2종·4턴 구조 및 제출 범위 의미 검토와, `/tmp/discovery-live-qa/browser/live-07/`, `live-08/`의 브라우저 왕복 모두 **PASS**다.
+
+| 실행 | 모델 생성 입력 ZIP SHA-256 | 내용 |
+|---|---|---|
+| live-07 | `0dccb57ca7e4c972ab0bce46c1123c96057e57dcc02310a85deaf3d49f6c4fa2` | 기획서만, 1,608 bytes |
+| live-08 | `dcf8b4fa44df94cdb9ca68a77f63791a33b1038212ad7f696f0c6cadd00aef92` | 기획서와 선택 원본 2개, 2,447 bytes |
+
+선택 UUID는 `08511884-c7bd-4271-9e3f-148ed727d29a`, `63c355a1-c0d6-4341-bfc8-7474016e788d`다. 원본 입력 해시를 확인했으며 ZIP plan.md와 두 JSONL은 준비 파일과 바이트 단위로 일치했다. 실제 모델 도구는 prepare 후 다음 턴 inspect를 수행했다. 초안을 확정하지 않고 정확한 선택 범위를 유지했으며, 사용자 발화의 앱 미업로드 상태를 지켰다.
+
+CLI `2.1.263`, 모델 `claude-sonnet-4-6`, 실행기 SHA `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`다. Chromium은 `151.0.7922.34`, 앱은 고정 commit `439d2ba491cef5f2a4c01947a03a1577491672d9`와 소스 검사를 통과했다. 두 result.json의 8개 검사(활성화·파일 업로드/재조회·참가자/운영자 다운로드·이력·크기 거부·주차 제한 관측·사용량 불변)가 모두 통과했다. 자체 시작한 loopback 서버만 종료했다.
+
+이 결과는 0.5.4의 Linux 합성 Camp 흐름과 Chromium 왕복에 한정한다. **0.5.4 Windows/macOS 전체 실제 대화 QA 합격을 뜻하지 않는다.** 네이티브 결제 한도에 따른 미완료 상태는 해당 실행 보고서를 따른다. 이전 패키지 결과를 같은 해시의 검증으로 합산하지 않는다.
