@@ -1,0 +1,50 @@
+{
+  "synthetic": true,
+  "as_of": "2026-09-07",
+  "invoices": [
+    {
+      "company": "DE01",
+      "invoice": "INV-101",
+      "dealer": "Dealer-A",
+      "currency": "EUR",
+      "sap_open": "600.00",
+      "unposted_bank": "300.00",
+      "review_remaining": "300.00",
+      "overdue_days": 6,
+      "status": "SAP 반영 확인 / 회수 전 검토",
+      "evidence": [
+        "T1",
+        "T2"
+      ]
+    },
+    {
+      "company": "DE01",
+      "invoice": "INV-102",
+      "dealer": "Dealer-B",
+      "currency": "EUR",
+      "sap_open": "500.00",
+      "unposted_bank": "0.00",
+      "review_remaining": "500.00",
+      "overdue_days": 0,
+      "status": "기일 미경과",
+      "evidence": []
+    }
+  ],
+  "dealer_aging": [
+    {
+      "dealer": "Dealer-A",
+      "currency": "EUR",
+      "sap_overdue": "600.00",
+      "review_overdue": "300.00",
+      "status": "검토용·확정 회수액 아님"
+    },
+    {
+      "dealer": "Dealer-B",
+      "currency": "EUR",
+      "sap_overdue": "0.00",
+      "review_overdue": "0.00",
+      "status": "검토용·확정 회수액 아님"
+    }
+  ],
+  "exceptions": []
+}

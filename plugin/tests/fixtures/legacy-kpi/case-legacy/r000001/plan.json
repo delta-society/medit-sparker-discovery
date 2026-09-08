@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "case_id": "case-legacy",
+  "revision": 1,
+  "status": "draft",
+  "created_at": "2026-09-07T22:49:56.175565+00:00",
+  "plan": {
+    "submission": {
+      "text": "합성 구버전 호환 시험 — 실제 참가자 자료 아님",
+      "source": "0.1.2 ZIP 저장 도우미"
+    },
+    "facts": [],
+    "user_result": {
+      "user": "",
+      "result": "",
+      "use_when": ""
+    },
+    "workflow": [],
+    "bottlenecks": [],
+    "selected_change": {
+      "candidate_id": null,
+      "change": "",
+      "reason": "",
+      "non_goals": []
+    },
+    "responsibilities": {
+      "ai": [],
+      "code": [],
+      "human": []
+    },
+    "inputs": [],
+    "acquisition_tasks": [],
+    "quality_conditions": [],
+    "acceptance_tests": [],
+    "implementation_steps": [],
+    "baseline": {
+      "people_time": {
+        "status": "unknown",
+        "value": null,
+        "unit": "minutes",
+        "per": "동일 업무 1건",
+        "source": "미확인"
+      },
+      "end_to_end": {
+        "status": "unknown",
+        "value": null,
+        "unit": "minutes",
+        "per": "동일 업무 1건",
+        "source": "미확인"
+      },
+      "rework": {
+        "status": "unknown",
+        "value": null,
+        "unit": "count",
+        "per": "동일 업무 1건",
+        "source": "미확인"
+      },
+      "actual_use": {
+        "status": "unknown",
+        "value": null,
+        "unit": "count",
+        "per": "동일 업무 1건",
+        "source": "미확인"
+      },
+      "additional_cost": {
+        "status": "unknown",
+        "value": null,
+        "unit": "KRW",
+        "per": "동일 업무 1건",
+        "source": "미확인"
+      }
+    },
+    "comparison": {
+      "same_work_unit": "",
+      "quality_guard": "",
+      "collection": "",
+      "future_check": "",
+      "frequency": "미확인"
+    },
+    "next_action": {
+      "owner": "",
+      "action": "",
+      "done_when": ""
+    },
+    "open_questions": []
+  },
+  "plan_sha256": "3f768d5db39dade92bcf9a3bdae20c3d17a7fd1ef1bf0a4afddf514a29d68a4d",
+  "previous_sha256": null,
+  "event": {
+    "action": "new",
+    "reason": null,
+    "candidate_id": null
+  },
+  "confirmation": null
+}

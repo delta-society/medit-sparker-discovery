@@ -1,0 +1,6 @@
+{
+  "name": "sparker-discovery",
+  "version": "0.4.1",
+  "description": "목적 KPI와 기존 업무 앱 입출력·측정 연결을 설계하는 AI Sparker 기획 플러그인",
+  "author": {"name": "Delta Society"}
+}
