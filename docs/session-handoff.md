@@ -19,7 +19,7 @@
 
 ## 최종 검증 영수증
 
-0.4.1: 도우미 회귀 62개 PASS, AR 합성 예제 12개 PASS, `claude plugin validate ./plugin` PASS, `git diff --check` PASS. 최종 ZIP을 임시 해제한 별도 Python 프로세스에서 r17 확정본 load/complete 검사를 실행해 PASS.
+0.4.1: 도우미 회귀 62개 PASS, AR 합성 예제 12개 PASS, `claude plugin validate ./plugin` PASS, 작업 트리 `git diff --check` PASS. 최초 staged 검사에서는 불변 구버전 fixture `plugin/tests/fixtures/legacy-kpi/case-legacy/r000001/plan.md:56`의 EOF 빈 줄 경고가 있었다. 호환성 원본 바이트 보존을 위해 수정하지 않았으며 이 경고를 전체 staged 검사 통과로 세지 않는다. 최종 ZIP을 임시 해제한 별도 Python 프로세스에서 r17 확정본 load/complete 검사를 실행해 PASS.
 
 ZIP SHA256: `3e440ce99cfc2111d4e11642c1c34e5ae0f7a09315d49ac0f0bdfd74bdf4debb`. 실제 호스트 전체 대화·사용자 설치·업무 앱 연결·실제 성과 측정·불량 분석 제품 시험은 미실행.
 
