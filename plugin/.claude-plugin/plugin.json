@@ -1,7 +1,7 @@
 {
   "name": "sparker-discovery",
-  "version": "0.6.1",
-  "description": "온보딩·Week 1에서 Skill·MCP를 체험하고 업무 기획·캠프 제출로 이어가는 AI Sparker 플러그인",
+  "version": "0.7.0",
+  "description": "작은 작업부터 업무 기획·과제 제출까지, 저장한 진행을 이어가는 AI Sparker 실습",
   "author": {
     "name": "Delta Society"
   }

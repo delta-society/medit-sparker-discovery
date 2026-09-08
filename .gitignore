@@ -9,3 +9,5 @@ __pycache__/
 .qa-runs/
 qa-release.zip
 qa-artifacts/
+
+.sparker-learning-progress.json
