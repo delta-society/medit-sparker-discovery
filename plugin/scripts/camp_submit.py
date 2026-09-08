@@ -58,7 +58,7 @@ def stable_read(path, limit=MAX_FILE):
         after = os.fstat(handle.fileno())
     key = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
     require(len(data) <= limit and key(before) == key(after) == key(path.stat()),
-            "읽는 동안 파일이 바뀌었습니다. 기록이 멈춘 뒤 다시 준비하세요: " + path.name)
+            "읽는 동안 파일이 바뀌었습니다. 기록이 멈춘 뒤 다시 준비하세요: " + path.name + repr((key(before), key(after), key(path.stat()))))
     return data
 
 
