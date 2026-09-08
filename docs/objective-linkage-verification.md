@@ -14,7 +14,7 @@
 
 ## 수정 경로
 
-`plugin/scripts/{plan,linkage,submission}.py`, `plugin/tests/test_linkage.py` 및 기존 제품/제출 회귀, `plugin/skills/plan/SKILL.md`, `plugin/references/{objective-linkage,conversation,data-contract,implementation-example}.md`, 매니페스트 0.4.0, SPEC/README/CONSTITUTION와 사용 안내·검증 포인터. 과거 KPI 계산 도우미는 호환용 보존하며 새 운영 측정 프로그램을 만들지 않았다.
+`plugin/scripts/{plan,linkage,submission}.py`, `plugin/tests/test_linkage.py` 및 기존 제품/제출 회귀, `plugin/skills/plan/SKILL.md`, `plugin/references/{objective-linkage,conversation,data-contract,implementation-example}.md`, 매니페스트 0.4.0, 개발 명세와 사용 안내·검증 포인터. 과거 KPI 계산 도우미는 호환용 보존하며 새 운영 측정 프로그램을 만들지 않았다.
 
 ## 미검증/경계
 
