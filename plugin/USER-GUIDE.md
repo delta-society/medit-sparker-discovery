@@ -32,7 +32,7 @@ claude plugin marketplace update sparker
 claude plugin update sparker-discovery@sparker
 ```
 
-비공개 GitHub 저장소이므로 설치 계정에 저장소 읽기 권한과 Git 인증이 필요하다. ZIP 다운로드는 설치 절차에 필요하지 않다. 작업 기록은 플러그인 캐시 밖의 자신의 로컬 실습 폴더에 저장한다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 별도 검증 대상이다.
+공개 GitHub 저장소이므로 설치를 위한 저장소 권한 요청은 필요하지 않다. ZIP 다운로드는 설치 절차에 필요하지 않다. 작업 기록은 플러그인 캐시 밖의 자신의 로컬 실습 폴더에 저장한다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 별도 검증 대상이다.
 
 소스 개발 시에는 `claude --plugin-dir ./plugin`으로 실행한다. 운영체제 검증 근거는 소스 저장소 `docs/platform-compatibility.md`를 따른다.
 
