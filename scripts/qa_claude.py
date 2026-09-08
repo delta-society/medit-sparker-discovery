@@ -257,6 +257,11 @@ def inspect_records(work, scenario, previous, turn_number=0, approved=None):
             if case.is_file():
                 continue
             require(case.is_dir(), 'unexpected store entry')
+            # A failed new may create its case directory before validating the
+            # input. Only a literally empty directory has no published state;
+            # prior revision hashes below still detect deletion of old state.
+            if next(case.iterdir(), None) is None:
+                continue
             if scenario.get('expected_case_id'):
                 require(case.name == scenario['expected_case_id'], 'unexpected case identity')
             store = plan.Store(store_root)

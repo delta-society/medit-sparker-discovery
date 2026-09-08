@@ -24,8 +24,8 @@ Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위
 | 저장/확정 거절·중단/재개 | linux-055-planning | 진행 중 |
 | Camp 경계 입력 | linux-055-edges | 진행 중; [제출 대화](CAMP-LIVE-SEMANTICS.md) |
 | 실제 대화 ZIP→브라우저 | linux-055-camp | 진행 중; [브라우저 검토](CAMP-BROWSER-REVIEW.md) |
-| Windows/macOS 네이티브 | native-07 대기 | GitHub 결제/사용 한도 차단; [네이티브 검토](NATIVE-LIVE-REVIEW.md) |
-| 활용 선택·목표 보존·일회성·주간 보고 | linux-055-reuse | Linux 진행 중, 네이티브 대기 |
+| Windows/macOS 네이티브 | native-07 실행 중 | 실행 차단 복구 확인; [네이티브 검토](NATIVE-LIVE-REVIEW.md) |
+| 활용 선택·목표 보존·일회성·주간 보고 | linux-055-reuse | Linux 진행 중, 네이티브 실행 중 |
 
 초기 실패 실행은 삭제하거나 성공 실행과 합치지 않는다. 구조 실행기의 `NOT_REVIEWED` 값도 그대로 보존하고, 각 검토 문서에서 발화·도구 호출·저장 리비전·파일 해시를 대조한 의미 판정을 별도로 제공한다.
 
@@ -42,3 +42,5 @@ Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위
 0.5.3 원격 aa8bcd2의 [Actions 실행 34196034344](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34196034344)는 request-matrix 작업도 시작하지 못했다. check-run 101963843792의 GitHub annotation은 최근 결제 실패 또는 지출 한도 증액 필요를 이유로 명시한다. 모델·제품 코드 실패가 아니며 로그가 없는 것을 PASS로 해석하지 않는다. 사용자에게 조직 Billing & plans 복구를 요청했다. 복구 전 다른 조직/저장소로 우회하거나 네이티브 미실행을 Linux 결과로 대체하지 않는다.
 
 0.5.2 원격 실행 34194609057 및 macOS 확정 재시도 34195413508의 실제 OS 증거는 각 보고서에 보존한다. 해당 후보의 발견 사항 때문에 최종 0.5.5의 네이티브 PASS로 승계하지 않는다.
+
+복구 관측: 이후 e181e00 소스의 호환성 CI [34197474831](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197474831)과 [34197469479](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197469479)가 실제로 실행되어 성공했다. 이에 3a13754에서 최종 0.5.5의 [native-07 실제 대화 시험](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197747230)을 시작했다. 운영 결제 설정을 이 작업에서 변경한 것은 아니며, 실행 차단의 해소만 관측했다.

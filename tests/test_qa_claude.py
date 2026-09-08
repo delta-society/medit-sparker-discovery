@@ -235,11 +235,59 @@ class RunnerTests(unittest.TestCase):
         store.write('case', 'new', plan=qa.plan.template(linked=True))
         (store.root / 'input.json').write_text('{}')
         (store.root / 'broken-case').mkdir()
-        with self.assertRaisesRegex(qa.plan.PlanError, '저장된 과제가 없습니다'):
-            qa.inspect_records(work, {}, {})
+        for entry in ('.lock', '.pending', 'corrupt.json'):
+            with self.subTest(entry=entry):
+                malformed = store.root / 'broken-case' / entry
+                malformed.write_text('{}')
+                with self.assertRaises(qa.plan.PlanError):
+                    qa.inspect_records(work, {}, {})
+                malformed.unlink()
         (store.root / 'broken-case').rmdir()
         with self.assertRaisesRegex(ValueError, 'unexpected case identity'):
             qa.inspect_records(work, {'expected_case_id': 'other-case'}, {})
+
+    def test_empty_failed_new_case_does_not_hide_valid_saved_case(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        invalid = qa.plan.template(linked=True)
+        invalid['workflow'] = [{'step': 1}]
+        with self.assertRaises(qa.plan.PlanError):
+            store.write('case-st7k', 'new', plan=invalid)
+        self.assertEqual(list((store.root / 'case-st7k').iterdir()), [])
+        store.write('stdev01', 'new', plan=qa.plan.template(linked=True))
+        current, records = qa.inspect_records(work, {'expected_case_id': 'stdev01'}, {})
+        self.assertEqual([r['case_id'] for r in records], ['stdev01'])
+        self.assertTrue(current)
+        self.assertTrue(all(name.startswith('stdev01/r000001/') for name in current))
+
+    def test_previously_saved_case_emptied_still_fails_history_check(self):
+        work = self.root / 'save-refusal/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        store.write('case', 'new', plan=qa.plan.template(linked=True))
+        before, _ = qa.inspect_records(work, {}, {})
+        qa.shutil.rmtree(store.root / 'case/r000001')
+        self.assertEqual(list((store.root / 'case').iterdir()), [])
+        with self.assertRaisesRegex(ValueError, 'immutable revision changed'):
+            qa.inspect_records(work, {}, before)
+
+    def test_save_refusal_rejects_even_empty_store_root(self):
+        work = self.root / 'save-refusal/work'
+        (work / '.sparker-discovery').mkdir()
+        with self.assertRaisesRegex(ValueError, 'save refusal violated'):
+            qa.inspect_records(work, {'no_store': True}, {})
+
+    def test_empty_linked_case_is_not_ignored(self):
+        work = self.root / 'save-refusal/work'
+        store_root = work / '.sparker-discovery'
+        store_root.mkdir()
+        target = work / 'empty-target'
+        target.mkdir()
+        try:
+            (store_root / 'linked-case').symlink_to(target, target_is_directory=True)
+        except OSError:
+            self.skipTest('Directory symlinks are unavailable for this account')
+        with self.assertRaisesRegex(ValueError, 'unexpected store entry'):
+            qa.inspect_records(work, {}, {})
 
     def test_scratch_does_not_bypass_revision_corruption_or_deletion(self):
         work = self.root / 'save-refusal/work'
