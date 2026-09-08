@@ -111,3 +111,23 @@
 CLI `2.1.263`, 모델 `claude-sonnet-4-6`, 실행기 SHA `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`다. Chromium은 `151.0.7922.34`, 앱은 고정 commit `439d2ba491cef5f2a4c01947a03a1577491672d9`와 소스 검사를 통과했다. 두 result.json의 8개 검사(활성화·파일 업로드/재조회·참가자/운영자 다운로드·이력·크기 거부·주차 제한 관측·사용량 불변)가 모두 통과했다. 자체 시작한 loopback 서버만 종료했다.
 
 이 결과는 0.5.4의 Linux 합성 Camp 흐름과 Chromium 왕복에 한정한다. **0.5.4 Windows/macOS 전체 실제 대화 QA 합격을 뜻하지 않는다.** 네이티브 결제 한도에 따른 미완료 상태는 해당 실행 보고서를 따른다. 이전 패키지 결과를 같은 해시의 검증으로 합산하지 않는다.
+
+## 0.5.5 후보: linux-055-camp → live-09-retry/live-10
+
+패키지 SHA-256 `49578b41bd10617837a76c0ca7edfd5355bf0b918cabe0b8ae7c269614883037`으로 실제 Claude가 만든 두 ZIP을 검토하고 새 Chromium 왕복을 완료했다. `/tmp/discovery-live-qa/runs/linux-055-camp/`의 2종·4턴 구조 및 제출 범위·원본 보존·준비/서버 제출 구분은 **PASS**다. 아래 P3 문구 관찰을 포함하며 앱 초안 표시 기능이 검증됐다는 뜻은 아니다. 실행기 SHA는 `60aba133f79a3b9e7a1a53a1fe89639d829e2080b5ab3e50b741c06deef75fc9`다.
+
+| 실행 | 모델 생성 입력 ZIP SHA-256 | 내용/결과 |
+|---|---|---|
+| live-09 | 기획서만 입력 | 지정 Chromium 실행 파일 부재로 launch 실패. 실패 result.json 보존. |
+| live-09-retry | `0dccb57ca7e4c972ab0bce46c1123c96057e57dcc02310a85deaf3d49f6c4fa2` | 기획서만, 1,608 bytes, PASS |
+| live-10 | `321f2b1fc0bead2b90eaa8ec4b0eba4edea956544fe63a4857253da40f2d4ac6` | 기획서와 선택 원본 2개, 2,447 bytes, PASS |
+
+선택 UUID는 `0441b837-a212-40ba-ae2e-877c6d9d1315`, `27678f0b-61a8-4a01-87aa-cbe8990c6d0c`다. 원본 입력 해시를 확인했으며 두 ZIP의 plan.md는 초기 r1과, 선택 JSONL은 제공 원본과 바이트 단위로 같았다. 두 실제 대화 모두 첫 턴 prepare, 다음 턴 inspect를 수행했고 SHA가 유지됐다. 자동 확정이나 외부 업로드는 없었다.
+
+**P3 문구 관찰:** 복수 세션 첫 응답은 “기획서가 초안(draft) 상태임을 앱에서도 확인하세요.”라고 안내했다. 앱은 ZIP 내부 draft 상태를 해석해 표시하지 않으므로 확인 위치가 부정확하다. 다만 전체 응답은 향후 업로드와 기록 확인 절차를 안내했고 다음 턴에 앱 미업로드·로컬 준비 상태를 명시했다. 앱이 실제로 draft 배지를 렌더링했다는 주장, 서버 제출 완료 단정, 실제 범위 변경은 없어 해당 실행의 차단 P2로 확대하지 않았다. 초안은 로컬 inspect 또는 ZIP 내부에서 확인한다고 안내하는 것이 정확하다.
+
+재시도와 live-10의 실제 브라우저는 설치된 Chromium `149.0.7827.55`다. 이전 실행의 `151.0.7922.34`로 기록하지 않았다. 앱 commit `439d2ba491cef5f2a4c01947a03a1577491672d9`의 tracked 소스 일치 검사를 통과했고 허용 생성 파일 `next-env.d.ts`의 SHA는 두 실행 모두 `0f70629890b72a0a82e91972cc032c04b658b26c265373cb711cf576bfbf8fcc`였다.
+
+각 `/tmp/discovery-live-qa/browser/live-09-retry/result.json`, `live-10/result.json`의 8개 검사는 UI 활성화, 실제 파일 업로드/새로고침 유지, 참가자 다운로드 SHA/전체 manifest, 인증 운영자 API 다운로드 SHA, 재제출 이력, 5 MiB 초과 거부, 잘못된 주차 동작 관측, 사용량 불변을 통과했다. 1회차 ZIP을 UI 2회차로 접수하는 앱 제한은 그대로이며 오제출 차단 PASS가 아니다. 자체 시작한 서버를 종료했고 완료 후 `/proc`에서 해당 격리 앱 cwd를 사용하는 잔여 프로세스는 0개였다.
+
+운영 서버·실제 계정 시험이 아닌 Linux 합성 앱 왕복 결과다. 네이티브 Windows/macOS 전체 실제 대화와 DEL-490 완료 조건은 별도 검토를 따른다.
