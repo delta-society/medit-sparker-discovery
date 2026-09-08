@@ -6,14 +6,7 @@ Claude Code와 대화하며 AI 도구를 익히고, 내 업무에 적용할 기�
 
 ## 1. 설치하기
 
-Claude Code를 실행한 뒤, **Claude Code 대화창**에 아래 명령을 한 줄씩 입력하세요.
-
-```text
-/plugin marketplace add delta-society/medit-sparker-discovery
-/plugin install sparker-discovery@sparker
-```
-
-설치가 끝나면 Claude Code를 종료하고, 자신의 실습 폴더에서 다시 실행하세요. ZIP을 다운로드하거나 이 저장소를 복제할 필요는 없습니다.
+설치·업데이트는 **[AI Sparker 공통 설치 안내](https://github.com/delta-society/medit-sparker-plugin#설치)**에서 진행하세요. 교육용 Discovery와 캠프 기록용 Camp를 같은 `sparker` 마켓플레이스에서 설치합니다. 이 저장소는 교육 기능의 소스와 사용법을 관리하며 별도 마켓플레이스를 제공하지 않습니다.
 
 ## 2. 실습 시작하기
 
@@ -41,16 +34,9 @@ Week 1에서는 다음을 함께 해봅니다.
 
 “Skill부터”, “MCP부터”, “기획만”, “제출부터”처럼 말해 원하는 단계로 이동할 수 있습니다. 어려우면 “쉽게 설명해줘”, 시간이 부족하면 “건너뛰기”라고 말하세요. MCP가 연결되어 있지 않아도 개념과 활용 방법을 먼저 익힐 수 있습니다.
 
-## 이미 설치했다면 업데이트하기
+## 업데이트
 
-아래 명령은 **터미널**에서 실행하세요.
-
-```sh
-claude plugin marketplace update sparker
-claude plugin update sparker-discovery@sparker
-```
-
-업데이트 후 Claude Code를 다시 시작하세요. 기존 실습 폴더와 기획서는 지우지 않습니다.
+[공통 업데이트 안내](https://github.com/delta-society/medit-sparker-plugin#업데이트)를 따릅니다. 공통 카탈로그에서 검증한 Discovery 버전을 제공하며, 이 저장소 main의 모든 변경이 즉시 배포되지는 않습니다.
 
 ## 준비물
 

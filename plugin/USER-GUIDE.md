@@ -12,12 +12,7 @@ Claude Code와 Python 3가 있는 환경에서 사용한다. 자체 웹앱이나
 
 Windows 네이티브와 macOS를 지원 대상으로 한다. Python 3.9 이상이 필요하며 새 교육 환경에는 지원 중인 Python 3.12 이상을 권장한다. 설치 확인은 macOS에서 `python3 -X utf8 --version`, Windows에서 `py -3 -X utf8 --version`으로 한다. Windows에서 `py`가 없다면 `python -X utf8 --version`으로 확인한다. Windows의 Bash/PowerShell 도구 선택은 Claude Code 버전·설정에 따라 다르므로 시작 터미널만으로 단정하지 않는다.
 
-Claude Code에서 GitHub 마켓플레이스를 등록하고 설치한다.
-
-```text
-/plugin marketplace add delta-society/medit-sparker-discovery
-/plugin install sparker-discovery@sparker
-```
+설치는 [AI Sparker 공통 설치 안내](https://github.com/delta-society/medit-sparker-plugin#설치)를 따른다. Discovery와 Camp를 같은 `sparker` 마켓플레이스에서 설치한다. 이 소스 저장소는 독립 마켓플레이스를 제공하지 않는다.
 
 설치 후 Claude Code를 다시 시작하고 자신의 로컬 실습 폴더에서 실행한다.
 
@@ -38,7 +33,7 @@ claude plugin marketplace update sparker
 claude plugin update sparker-discovery@sparker
 ```
 
-공개 GitHub 저장소이므로 설치를 위한 저장소 권한 요청은 필요하지 않다. ZIP 다운로드는 설치 절차에 필요하지 않다. 작업 기록은 플러그인 캐시 밖의 자신의 로컬 실습 폴더에 저장한다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 별도 검증 대상이다.
+마켓플레이스 접근에 문제가 있으면 운영진에게 GitHub 접근 권한을 확인한다. ZIP 다운로드는 설치 절차에 필요하지 않다. 작업 기록은 플러그인 캐시 밖의 자신의 로컬 실습 폴더에 저장한다. OneDrive·회사 네트워크 드라이브의 동기화/잠금 동작은 별도 검증 대상이다.
 
 소스 개발 시에는 `claude --plugin-dir ./plugin`으로 실행한다. ZIP으로 검증할 때는 버전별 고정 폴더에 압축을 풀고 `claude --plugin-dir "<압축을 푼 절대 경로>"`로 로드한다. 폴더 바로 아래 `.claude-plugin/plugin.json`이 있어야 하며 실행 중이거나 재개할 세션의 플러그인 폴더를 이동·교체하지 않는다. 기존 네이티브 대화 QA는 압축해제 폴더 로드 방식이며 마켓플레이스 설치 검증과 구분한다. 운영체제별 소스·패키지·실제 검증 범위는 소스 저장소 `docs/platform-compatibility.md`를 따른다.
 
