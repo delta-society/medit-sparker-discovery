@@ -54,10 +54,17 @@ def stable_read(path, limit=MAX_FILE):
     before = path.stat()
     require(0 < before.st_size <= limit, "파일 크기 한도 초과 또는 빈 파일: " + path.name)
     with path.open("rb") as handle:
+        opened = os.fstat(handle.fileno())
         data = handle.read(limit + 1)
         after = os.fstat(handle.fileno())
     key = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
-    require(len(data) <= limit and key(before) == key(after) == key(path.stat()),
+    # Windows/Python versions can expose different ctime semantics through stat
+    # and fstat. Compare each API's timestamps with itself, and cross-check the
+    # file identity separately so an unchanged rewritten file is not rejected.
+    identity = lambda s: (s.st_dev, s.st_ino)
+    require(len(data) == opened.st_size <= limit and
+            key(before) == key(path.stat()) and key(opened) == key(after) and
+            identity(before) == identity(opened),
             "읽는 동안 파일이 바뀌었습니다. 기록이 멈춘 뒤 다시 준비하세요: " + path.name)
     return data
 

@@ -12,7 +12,7 @@
 
 첫 리뷰어는 실행기 실패·재개·예산·증거 처리를, 두 번째는 통합 패키징·Camp 계약·OS 호환성과 실행기 연결을 검토했다. 한 리뷰어가 발견한 입력 무결성 결함은 다른 리뷰어도 독립 재현했다.
 
-## 최종 로컬 검증
+## 1차 보완 후 로컬 검증
 
 - `python3 -m unittest discover -s plugin/tests -q`: 87개 PASS. 저장·포터블 인코딩·Camp·배포 ZIP 해제 실행 포함.
 - `python3 -m unittest discover -s tests -v`: 15개 PASS. **가상 CLI 이벤트를 쓰는 실행기 회귀이며 실모델 QA가 아니다.** UTF-8 및 timeout subprocess는 실제 로컬 Python으로 검증했다.
@@ -21,6 +21,14 @@
 - `claude plugin validate ./plugin`: PASS.
 - `git diff --check`: PASS.
 - 12개 합성 시나리오, 총 26턴 준비 확인. prepare는 모델 호출을 하지 않으며 `PREPARED_NOT_RUN`으로 기록한다.
+
+## 원격 Windows 실패 후 추가 보완·재리뷰
+
+첫 게시 `bafab3a`의 [CI 실행](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34191264674)에서 Linux 3.9/3.13과 macOS 15는 통과했으나 Windows 두 job이 실패했다. 이를 완료로 남기지 않고 DEL-480/482를 다시 열어 보완했다.
+
+- Windows Python 3.13: Camp의 `stable_read`가 `stat`과 `fstat`의 전체 시간값을 교차 비교하여 정상 재작성된 입력/ZIP을 읽기 중 변경으로 오판했다. 각 API의 읽기 전후 값을 비교하고 파일 식별자는 별도 교차 검사하도록 수정했다. 서로 다른 시간 기준의 안정된 파일 허용·실제 handle 변경 거부 회귀 2개를 추가했다. Windows 시간 필드의 이식성 근거: [Python stat 문서](https://docs.python.org/3.13/library/os.html#os.stat_result.st_ctime).
+- Windows Python 3.9: 실행기 테스트의 전역 `subprocess.run` 대체가 `platform.win32_ver()` 내부 호출에도 가짜 bytes를 반환했다. Claude 버전 호출만 대체하고 OS 조회는 실제 호출로 위임했다. 실행기 제품 코드의 OS 수집은 유지했다.
+- 두 서브에이전트가 변경된 3개 파일을 재검토했다. 추가 P1/P2 발견 없음. 로컬 플러그인 89개 + 실행기 15개 + 기존 AR 12개 = 116개 PASS. 실제 Windows 복구 판정은 수정 커밋의 원격 CI 결과로 기록한다.
 
 ## 완료 범위와 한계
 

@@ -37,9 +37,15 @@ class RunnerTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def fake_run(self, stop=None, capture=None):
+        real_run = subprocess.run
+        real_which = qa.shutil.which
+        def cli_version_only(args, *a, **kw):
+            if args == [sys.executable, '--version']:
+                return SimpleNamespace(returncode=0, stdout=b'2.1.263 (Claude Code)')
+            return real_run(args, *a, **kw)
         with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'synthetic-secret-never-log'}), \
-             patch.object(qa.shutil, 'which', return_value=sys.executable), \
-             patch.object(qa.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout=b'2.1.263 (Claude Code)')), \
+             patch.object(qa.shutil, 'which', side_effect=lambda name: sys.executable if name == 'claude' else real_which(name)), \
+             patch.object(qa.subprocess, 'run', side_effect=cli_version_only), \
              patch.object(qa, 'capture', side_effect=capture or (lambda *a: (0, stream(self.sid), '', False))):
             return qa.run(self.root, 'disposable-container', stop_after=stop)
 
