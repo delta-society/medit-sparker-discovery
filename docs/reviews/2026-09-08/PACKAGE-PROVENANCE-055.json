@@ -1,18 +1,18 @@
 {
-  "source_sha": "40805f29a3056a11027effd5015a2dbb3c16ee1b",
-  "package_version": "0.5.7",
-  "package_sha256": "de19675b8687b81378fdedc1a53a335df87ebd20e8457272be2f1cb7cd808d23",
+  "source_sha": "e181e00c1678d21a0333365f93f35164b592f7ee",
+  "package_version": "0.5.5",
+  "package_sha256": "49578b41bd10617837a76c0ca7edfd5355bf0b918cabe0b8ae7c269614883037",
   "all_21_members_match_remote_source": true,
   "entries": [
     {
       "member": ".claude-plugin/plugin.json",
       "source": "plugin/.claude-plugin/plugin.json",
-      "sha256": "96c315f96c19549219dfc1e0602e7c1d1dbfd5e1ce8e635a7689b777e8ece895"
+      "sha256": "2877aadfe301af9ec6391a2f4d7ef79011924ed2c4c8341c91419d2c7797b148"
     },
     {
       "member": "skills/plan/SKILL.md",
       "source": "plugin/skills/plan/SKILL.md",
-      "sha256": "75662343f43a84d8487c850595f57b90250a76b0468b519a57d4829e5af53414"
+      "sha256": "78c89e92e7bf2fc82d48376a615c6a4707dd0d97b32141b173733162a2f812c3"
     },
     {
       "member": "skills/submit/SKILL.md",
@@ -47,7 +47,7 @@
     {
       "member": "scripts/plan.py",
       "source": "plugin/scripts/plan.py",
-      "sha256": "234f04080956dd2f9eb35b1130383cfc8c564e1258cd4b4598f562b2bca6e249"
+      "sha256": "1167f1894382fb13efba6693444ca5317aaaf0a17e3c3200b51537cee369218d"
     },
     {
       "member": "scripts/linkage.py",
@@ -107,7 +107,7 @@
     {
       "member": "USER-GUIDE.md",
       "source": "docs/plugin-guide.md",
-      "sha256": "98ef8d30c4584719ee066d04b77e08fbc13283ca9fb9475787c455fed8082b17"
+      "sha256": "21e39248a9e1b5720e819400da561952ef7963893c78acae71f20995c6aaeceb"
     }
   ]
 }

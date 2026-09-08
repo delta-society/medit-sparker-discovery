@@ -1,50 +1,59 @@
-# 실제 Claude QA 최종 인수 기록
+# 실제 Claude QA 인수 기록
 
-현재 판정: **0.5.5 재검증 진행 중**. 이 문서만으로 전체 QA·운영 배포 완료를 뜻하지 않는다.
+현재 판정: **0.5.7 Haiku 4.5의 사용자 지정 핵심 3턴 인수 게이트 PASS**.
 
-## 후보와 변경
+사용자는 소요 시간을 줄이기 위해 이후 Claude 호출을 Haiku 4.5로 지정했고, “Haiku에서 통과하면 통과로 처리”하도록 인수 기준을 변경했다. 새 후보의 핵심 활용 선택 3턴을 최종 게이트로 삼는다. 이전 Sonnet 결과를 Haiku 결과로 바꾸거나 새 후보의 전체 OS 시험으로 확대하지 않는다.
+
+## 현재 후보
 
 | 항목 | 값 |
 |---|---|
-| 플러그인 | sparker-discovery 0.5.5 |
-| ZIP SHA-256 | `49578b41bd10617837a76c0ca7edfd5355bf0b918cabe0b8ae7c269614883037` |
-| CLI / 실제 모델 | Claude Code 2.1.263 / claude-sonnet-4-6 |
-| 패키지 | `.qa-runs/releases/sparker-discovery-0.5.5.zip` (현재 QA 작업 사본의 로컬 파일) |
+| 플러그인 | sparker-discovery 0.5.7 |
+| 소스 | `40805f29a3056a11027effd5015a2dbb3c16ee1b` |
+| ZIP SHA-256 | `de19675b8687b81378fdedc1a53a335df87ebd20e8457272be2f1cb7cd808d23` |
+| 새 대화 모델 | `claude-haiku-4-5-20251001` |
+| CLI | Claude Code 2.1.263 |
+| 패키지 | `.qa-runs/releases/sparker-discovery-0.5.7.zip` |
 | 원격 변경 | [PR #5](https://github.com/delta-society/medit-sparker-discovery/pull/5), 기반 PR #2 |
 
-Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위에 선별 통합했다. 31개 파일 중 24개가 기존 Git 파일과 같고 7개가 별도 변경이었다. 정확한 작성 환경·단일 출발 커밋은 첨부만으로 확정하지 않는다. [분석 및 통합 결정](SUNG-INTEGRATION.md)에 근거가 있다.
+ZIP의 21개 파일을 원격 소스와 바이트 대조했다. [패키지 근거](PACKAGE-PROVENANCE.json)에 해시를 기록했다. 0.5.5 근거는 [별도 보존](PACKAGE-PROVENANCE-055.json)했다.
 
-실제 대화에서 발견한 원문 정제, 근거 없는 현행 수동 작업 단정, 거절된 세션을 사용자 선택 없이 기획서 전용 ZIP으로 바꾸는 문제를 보완했다. 0.5.2에서도 현행 수동 표현이 한 저장 초안에 재발했으므로 이전 PASS를 전체 성공으로 확대하지 않았다. 0.5.3은 저장 직전 근거 대조를 추가했으나 검토 결과에 원문에 없는 수정 요청 절차가 남았다. 0.5.4는 근거가 행 전체를 지지하는지 확인하고, 저장 거절의 답변에도 같은 기준을 적용한다. 활용 선택에서 제외한 기능이 기존 구현·시험에 남았던 문제도 기획서 전체의 범위 대조로 보완했지만 0.5.4 실제 활용 선택에서도 제외된 계산 기능을 선행 구현으로 되살렸다. 0.5.5는 선택한 활용이 기존/제공 자료를 읽도록 설계하고, 제외한 자료 생산 기능은 새로 구현하지 않도록 명시했다. 이 변경의 실제 효과는 별도 새 후보 시험으로 확인한다. 회귀 테스트 91개 통과는 실제 대화 의미 통과와 구분한다.
+0.5.7은 Haiku가 참조를 잘못된 `skills/plan/references`에서 찾은 뒤 임의 JSON을 저장하던 실패를 보완한다. Claude가 치환하는 `${CLAUDE_PLUGIN_ROOT}`의 절대 참조 경로를 제공하고, helper의 template/new/update 및 과제·리비전·파일 위치 확인을 저장 완료 조건으로 명시했다. 두 리뷰어가 이 변경을 검토했으며 플러그인 회귀 93개가 통과했다. 실행기 회귀는 48개가 통과했다.
 
-## 검증 결과
+## 실제 검증 범위
 
-| 영역 | 최종 후보 실행 | 판정 / 보고서 |
+| 후보·모델 | 실행 | 결과 |
 |---|---|---|
-| 원문 근거·주입 | linux-055-planning + 별도 retry | 충분 자료 2턴 및 별도 retry 10턴 PASS; [의미 검토](LINUX-CONTROLS-REVIEW.md) |
-| 저장/확정 거절·중단/재개 | linux-055-planning-retry, linux-055-finalize | 제어 흐름 및 확정/내보내기 3턴 PASS; [검토](LINUX-CONTROLS-REVIEW.md) |
-| Camp 경계 입력 | linux-055-edges | 5종·10턴 PASS; [제출 대화](CAMP-LIVE-SEMANTICS.md) |
-| 실제 대화 ZIP→브라우저 | linux-055-camp, live-09-retry/live-10 | 2종·4턴 및 두 브라우저 왕복 PASS; [브라우저 검토](CAMP-BROWSER-REVIEW.md) |
-| Windows/macOS 네이티브 | native-07 + native-08 | 양 OS Camp 24턴·확정 6턴, Windows 기획 12턴 PASS. macOS 기획 재시험·양 OS 활용 선택 진행 중; [네이티브 검토](NATIVE-LIVE-REVIEW.md) |
-| 활용 선택·목표 보존·일회성·주간 보고 | linux-055-reuse + retry | Linux 4종·9턴 PASS, 양 OS 결과 검토 중; [검토](LINUX-055-REUSE-REVIEW.md) |
+| 0.5.7 Haiku 4.5 | linux-057-haiku45, 활용 미확인→선택/제외 3턴 | PASS; [독립 검토](HAIKU-ACCEPTANCE.md) |
+| 0.5.5 Sonnet 4.6 | Linux 충분 원문 2턴 + 별도 planning retry 10턴, 확정/내보내기 3턴 | scoped PASS; [검토](LINUX-CONTROLS-REVIEW.md) |
+| 0.5.5 Sonnet 4.6 | Linux 활용 선택 3턴 + 별도 retry 6턴 | 4사례·9턴 scoped PASS; [검토](LINUX-055-REUSE-REVIEW.md) |
+| 0.5.5 Sonnet 4.6 | Linux Camp 경계 10턴·ZIP 준비 4턴, Chromium 왕복 2회 | scoped PASS; [경계](CAMP-LIVE-SEMANTICS.md)·[브라우저](CAMP-BROWSER-REVIEW.md) |
+| 0.5.5 Sonnet 4.6 | native-07 Windows 기획 12턴, 양 OS Camp 24턴·확정 6턴 | scoped PASS; [검토](NATIVE-LIVE-REVIEW.md) |
+| 0.5.5 Sonnet 4.6 | native-07 양 OS 활용 선택 18턴 | 구조 PASS, 근거 없는 현행 수작업 단정 F2/P2 남음; [검토](NATIVE-055-REUSE-REVIEW.md) |
+| 0.5.5 Sonnet 4.6 | native-07 macOS 기획 일부 / native-08 별도 재시험 | 수집기 문제로 일부 중단; native-08 재시험 10턴 구조 PASS, 최신 사용자 인수 게이트가 아님 |
 
-초기 실패 실행은 삭제하거나 성공 실행과 합치지 않는다. 구조 실행기의 `NOT_REVIEWED` 값도 그대로 보존하고, 각 검토 문서에서 발화·도구 호출·저장 리비전·파일 해시를 대조한 의미 판정을 별도로 제공한다.
+기존 Sonnet F2는 사실과 다르게 해결됐다고 쓰지 않는다. 사용자 지정 Haiku 결과만 새 게이트에 사용한다. 자동 구조 결과의 `NOT_REVIEWED`도 보존하며 의미 검토는 실제 발화·도구·저장 리비전·해시를 대조한 별도 문서에서 제공한다.
 
-## 운영 인수에 남는 범위
+## 실패와 보완의 추적
 
-- 실제 MacBook 설치·사용 확인(DEL-483), 강사의 발표/실습 시간 리허설(DEL-441), 교육 배포 인수(DEL-486)는 별도로 남는다. 준비물은 [운영자 실행 준비표](../../operator-readiness.md)에 있다.
-- Windows Server 2022 runner와 macOS 15 VM의 결과다. Windows 10/11·OneDrive·기업 보안 소프트웨어·ARM64·개인 MacBook에서의 설치 성공을 대신하지 않는다.
-- 현재 후보는 수동 Camp ZIP이다. 기획서 PDF 내보내기와 자동 전체 대화 텔레메트리는 포함하지 않는다. DEL-489에서 확정한 정책은 유지하며, 자동 수집 구현·실제 저장 권한·복구/분석 인수는 DEL-507~512에서 추적한다.
-- 참가자 앱은 ZIP의 주차와 업로드 대상 주차 불일치를 서버에서 거부하지 않는 현행 한계가 있다. 같은 주차 선택과 제출 기록 대조가 필요하다. QA의 잘못된 주차 수용 관찰을 정상 차단으로 쓰지 않는다.
-- 합성 입력과 시험 계정만 사용했다. 공격 지시를 실행하지 않은 모델 관측과 네트워크 격리의 독립 차단 시험을 구분한다. 모든 미래 프롬프트 주입·임의 업무 판단의 안전성을 보장하지 않는다.
+Sung 첨부 0.4.2의 활용 가설 선제안·선택 흐름을 기존 보완 위에 선별 통합했다. 31개 파일 중 24개는 기존 Git 파일과 같고 7개는 별도 변경이었다. 작성 환경이나 단일 출발 커밋은 첨부만으로 단정하지 않는다. [통합 근거](SUNG-INTEGRATION.md)를 따른다.
 
-## 네이티브 재시험 차단 근거
+이전 실제 대화의 원문 정제·근거 없는 현행 업무 단정·거절 세션 임의 대체·제외 기능 재도입을 보완했다. 0.5.5는 선택 활용이 기존/제공 자료를 읽도록 하고 제외된 자료 생산 기능을 새로 구현하지 않도록 했다. 범위 제외 효과는 확인됐지만 Sonnet 네이티브의 현행 업무 단정은 위와 같이 남았다.
 
-0.5.3 원격 aa8bcd2의 [Actions 실행 34196034344](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34196034344)는 request-matrix 작업도 시작하지 못했다. check-run 101963843792의 GitHub annotation은 최근 결제 실패 또는 지출 한도 증액 필요를 이유로 명시한다. 모델·제품 코드 실패가 아니며 로그가 없는 것을 PASS로 해석하지 않는다. 사용자에게 조직 Billing & plans 복구를 요청했다. 복구 전 다른 조직/저장소로 우회하거나 네이티브 미실행을 Linux 결과로 대체하지 않는다.
+실패한 new가 남긴 빈 폴더를 리비전으로 간주하던 검사기는 ba4afd4에서 보완했다. 문서가 허용한 작업 폴더 직접 저장을 기본 숨김 폴더 전용 수집기가 놓친 경우는 23ed4bf에서 보완했다. 작업 폴더 직계 과제와 기본 저장소 모두 전체 Store 검증을 적용하고, 두 위치의 이력을 구분해 삭제·손상·저장 거절·승인 집합 변경·링크를 검사한다. 원래 실패를 제품 저장 실패나 성공으로 바꾸지 않는다.
 
-0.5.2 원격 실행 34194609057 및 macOS 확정 재시도 34195413508의 실제 OS 증거는 각 보고서에 보존한다. 해당 후보의 발견 사항 때문에 최종 0.5.5의 네이티브 PASS로 승계하지 않는다.
+추가 Sonnet 5 실행은 사용자의 Haiku 변경 요청으로 중단했다. 0.5.5 Haiku는 잘못된 참조 경로와 helper 미사용 때문에 실패했고 원래 증거를 보존했다. 0.5.6은 경로를 보완했지만 임시 입력을 과제 폴더에 넣은 오류를 복구하다 원문을 빠뜨려 실패했다. 0.5.7은 linked template에 submission/facts를 유지하고 입력을 과제 폴더 밖에 작성하도록 보완했다. 새 실행을 기존 실패 파일에 덮어쓰지 않았다.
 
-복구 관측: 이후 e181e00 소스의 호환성 CI [34197474831](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197474831)과 [34197469479](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197469479)가 실제로 실행되어 성공했다. 이에 3a13754에서 최종 0.5.5의 [native-07 실제 대화 시험](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34197747230)을 시작했다. 운영 결제 설정을 이 작업에서 변경한 것은 아니며, 실행 차단의 해소만 관측했다.
+## 완료 범위와 인수 자료
 
-검사기 보완 중: 실패한 `new` 명령이 남긴 빈 폴더를 유효 리비전으로 간주하던 문제는 ba4afd4에서 보완하고 43개 검사기 테스트를 통과했다. 별도로 native-07 macOS planning은 문서가 허용한 작업 폴더 직접 저장에 성공했으나, 기본 숨김 폴더만 읽는 수집기가 저장을 놓쳐 중단됐다. 이 실행은 제품 저장 실패나 전체 PASS로 기록하지 않는다. 승인된 작업 폴더의 직계 과제 저장도 전체 Store 검증을 적용하도록 보완했다. 두 저장 위치의 이력 키를 구분하고 삭제·손상·저장 거절·승인 집합 변경·심볼릭 링크 차단을 확인한 검사기 회귀 48개가 통과했다. macOS의 미완료 네 사례는 native-08 별도 실행으로 재검증한다.
+DEL-485와 DEL-490은 각각 0.5.5의 실제 Linux 격리 QA, 양 OS Camp 및 브라우저 검증 근거로 Done 처리했다. 최종 새 후보의 모델 기준은 위 Haiku 게이트로 구분한다.
 
-DEL-490은 같은 0.5.5 후보의 양 OS Camp 24턴, Linux 경계 10턴·ZIP 준비 4턴과 두 Chromium 왕복의 독립 검토를 완료하여 Done 처리했다. 나머지 실행의 진행 상태와 구분한다. 사용자 요청에 따라 시작한 `linux-055-sonnet5`는 후속 Haiku 4.5 선택으로 중단했다. 부분 증거는 보존하고 PASS를 부여하지 않는다. 새 `linux-055-haiku45`는 `claude-haiku-4-5-20251001`에서 핵심 활용 선택 3턴을 시험하며 기존 Sonnet 4.6 결과와 별도로 기록한다. 전체 OS 시험을 새 모델로 반복한 것은 아니다. 이후 새 Claude 대화 호출은 사용자 지정 Haiku 4.5를 사용한다.
+- 실제 MacBook 설치·사용 확인(DEL-483), 강사 시간 리허설(DEL-441), 교육 배포 인수(DEL-486)는 담당자가 수행한다. [운영자 준비표](../../operator-readiness.md)에 설치·업데이트·복구·인계 절차가 있다.
+- 네이티브 근거는 Windows Server 2022와 macOS 15 VM이다. Windows 10/11·OneDrive·기업 보안 소프트웨어·실제 MacBook 검증을 대신하지 않는다.
+- 현재 후보는 수동 Camp ZIP이다. 기획서 PDF와 자동 전체 대화 텔레메트리는 포함하지 않는다. DEL-489 확정 정책과 DEL-507~512의 병행 구현 경계를 유지한다.
+- 참가자 앱은 ZIP/업로드 주차 불일치를 거부하지 않고 draft 상태를 자동 표시하지 않는다. 일부 모델 안내의 표시 가능성 추측은 한계로 남긴다.
+- 합성 입력과 시험 계정만 썼다. 모델의 공격 거절 관측과 별도의 네트워크 차단 시험을 구분하며 모든 미래 공격·업무 판단의 안전성을 보장하지 않는다.
+
+최종 핵심 검토는 원문 보존, 정상 r1/r2 저장, 미확정 목표·확인 경계, 선택 범위와 제외 기능 반영을 통과했다. user_result에 초기 주간 검토 요약이 남은 P3 정합성 한계는 검토 문서에 기록한다. 사용자가 지정한 제한된 Haiku 인수 기준의 PASS이며 모든 필드·모델·OS의 완전성을 뜻하지 않는다.
+
+최종 소스의 [호환성 CI](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34200275116)와 [호환성 CI](https://github.com/delta-society/medit-sparker-discovery/actions/runs/34200271149)가 통과했다. 자체 컨테이너·네트워크·앱 서버와 임시 CI 인증을 정리했으며 원본 사용자 인증은 변경하지 않았다. 로컬 증거 `.qa-runs/evidence-2026-09-08/index.json`은 수집 파일의 해시를 제공하며 인증값 검사 후 보존한다.

@@ -29,7 +29,7 @@ CLI 실패, 잘못된 모델/세션, 플러그인 미로딩, 누락된 결과/�
 실습 전용 macOS 계정에서 체크아웃과 고정 CLI/Python 3.9+를 준비한다. 현재 CLI 2.1.263을 기준으로 구현했으며 모델 ID는 실행할 계정에서 사용 가능한 정확한 ID를 명시한다. 아래 ID는 예시이며 가용성을 보장하지 않는다.
 
 ```sh
-python3 -X utf8 scripts/qa_claude.py prepare --output .qa-runs/mac-01 --model claude-sonnet-4-6 --claude-version 2.1.263 --scenario sufficient-source --scenario stop-resume
+python3 -X utf8 scripts/qa_claude.py prepare --output .qa-runs/mac-01 --model claude-haiku-4-5-20251001 --claude-version 2.1.263 --scenario sufficient-source --scenario stop-resume
 python3 -X utf8 scripts/qa_claude.py run .qa-runs/mac-01 --execution-boundary dedicated-native-account --stop-after 1
 python3 -X utf8 scripts/qa_claude.py run .qa-runs/mac-01 --execution-boundary dedicated-native-account
 ```
@@ -41,7 +41,7 @@ Apple Silicon/macOS 26에서는 Linux 격리 실행의 우선 후보로 Apple co
 전용 Windows 테스트 VM/계정에 고정 Claude Code, Git Bash와 Python 3.9+를 준비한다. PowerShell에서 실행하며 실제 Claude Bash 도구의 Git Bash 경로 변환도 도구 로그로 확인한다. 한글·공백 경로를 포함한다.
 
 ```powershell
-py -3 -X utf8 scripts/qa_claude.py prepare --output '.qa-runs/윈도 QA 01' --model claude-sonnet-4-6 --claude-version 2.1.263 --scenario sufficient-source --scenario stop-resume
+py -3 -X utf8 scripts/qa_claude.py prepare --output '.qa-runs/윈도 QA 01' --model claude-haiku-4-5-20251001 --claude-version 2.1.263 --scenario sufficient-source --scenario stop-resume
 py -3 -X utf8 scripts/qa_claude.py run '.qa-runs/윈도 QA 01' --execution-boundary disposable-vm --stop-after 1
 py -3 -X utf8 scripts/qa_claude.py run '.qa-runs/윈도 QA 01' --execution-boundary disposable-vm
 ```
@@ -54,7 +54,7 @@ Windows Server CI 결과와 Windows 10/11 참가자 환경 결과를 구분한�
 
 ```sh
 # Prepared disposable environment: no real participant data or host mounts.
-python3 -X utf8 /src/scripts/qa_claude.py prepare --output /qa/run-01 --model claude-sonnet-4-6 --claude-version 2.1.263
+python3 -X utf8 /src/scripts/qa_claude.py prepare --output /qa/run-01 --model claude-haiku-4-5-20251001 --claude-version 2.1.263
 python3 -X utf8 /src/scripts/qa_claude.py run /qa/run-01 --execution-boundary disposable-container
 ```
 
