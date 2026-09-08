@@ -169,6 +169,19 @@ class CampSubmissionTests(unittest.TestCase):
             self.prepare(output=output_link)
         self.assertTrue(path.exists())
 
+    def test_stat_and_fstat_ctime_semantics_can_differ(self):
+        from types import SimpleNamespace
+        path = self.session()
+        expected = path.read_bytes()
+        real_fstat = os.fstat
+        def different_ctime(fd):
+            value = real_fstat(fd)
+            return SimpleNamespace(**{name: getattr(value, name) for name in
+                                      ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns')},
+                                   st_ctime_ns=value.st_ctime_ns + 1000000)
+        with patch.object(camp.os, 'fstat', different_ctime):
+            self.assertEqual(camp.stable_read(path), expected)
+
     def test_changed_file_during_read_rejected(self):
         path = self.session()
         real_open = Path.open
