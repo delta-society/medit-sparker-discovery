@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "case_id": "case-product",
+  "revision": 1,
+  "status": "draft",
+  "created_at": "2026-09-08T01:47:56.803349+00:00",
+  "plan": {
+    "user_result": {
+      "user": "검토자(가설)",
+      "result": "검증된 취합 파일",
+      "use_when": "검토 시작 전(가설)"
+    },
+    "workflow": [
+      {
+        "step": "파일 취합",
+        "actor": "담당자(가설)",
+        "input": "CSV",
+        "output": "통합 CSV",
+        "wait_or_rework": "",
+        "basis": ""
+      }
+    ],
+    "selected_change": {
+      "candidate_id": null,
+      "change": "누락 검사 후 합치기",
+      "reason": "",
+      "non_goals": [
+        "승인 자동화"
+      ]
+    },
+    "responsibilities": {
+      "ai": [
+        "오류 설명 초안"
+      ],
+      "code": [
+        "필수 필드 검사"
+      ],
+      "human": [
+        "최종 검토"
+      ]
+    },
+    "inputs": [
+      {
+        "name": "검증용 CSV",
+        "source": "제공 예정",
+        "access": "missing",
+        "acquisition_id": "get-a"
+      }
+    ],
+    "acquisition_tasks": [
+      {
+        "id": "get-a",
+        "what": "비식별 시험 CSV",
+        "owner": "담당자 후보",
+        "method": "담당자에게 로컬 사본 요청",
+        "done_when": "필수 열과 정답 대조표 확보"
+      }
+    ],
+    "quality_conditions": [
+      "행 누락/중복이 없어야 함"
+    ],
+    "acceptance_tests": [
+      {
+        "id": "normal-a",
+        "type": "normal",
+        "input": "a.csv: id=1, b.csv: id=2",
+        "steps": [
+          "취합 함수를 두 파일로 호출",
+          "결과 id 목록 대조"
+        ],
+        "expected": "id 1,2 각각 한 행",
+        "pass_condition": "결과 2행이며 id 집합 {1,2}",
+        "runner": "구현 담당자"
+      },
+      {
+        "id": "exception-a",
+        "type": "exception",
+        "input": "필수 id 열 없는 CSV",
+        "steps": [
+          "누락 파일로 취합 함수 호출",
+          "출력과 오류 확인"
+        ],
+        "expected": "누락 열 이름 오류, 정상 출력 생성 안 함",
+        "pass_condition": "오류에 id 포함, 출력 없음",
+        "runner": "구현 담당자"
+      }
+    ],
+    "implementation_steps": [
+      {
+        "action": "CSV 검사 함수 구현",
+        "owner": "구현 담당자",
+        "output": "validate_csv 함수",
+        "verify": "정상/예외 수용 시험 실행"
+      }
+    ],
+    "next_action": {
+      "owner": "담당자 후보",
+      "action": "검증용 파일 확보",
+      "done_when": "비식별 CSV와 대조표 준비"
+    },
+    "open_questions": [
+      "CSV 인코딩은 UTF-8인가?"
+    ],
+    "planning_scope": "product"
+  },
+  "plan_sha256": "6d05330ef2e7c1161224e5889ed484f79d0c6cdd5127272df6836d6ace89f5e5",
+  "previous_sha256": null,
+  "event": {
+    "action": "new",
+    "reason": null,
+    "candidate_id": null
+  },
+  "confirmation": null
+}
