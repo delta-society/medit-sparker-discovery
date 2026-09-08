@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "plan.py"
+sys.path.insert(0, str(SCRIPT.parent))
 spec = importlib.util.spec_from_file_location("sparker_plan", SCRIPT)
 p = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(p)
@@ -142,6 +143,39 @@ class LifecycleTests(unittest.TestCase):
         updated["submission"]["text"] = "원문 바꾸기"
         with self.assertRaises(p.PlanError):
             self.store.write("case-a", "update", plan=updated, expected=1, reason="안 됨")
+
+    def test_linked_cli_template_exposes_source_without_legacy_measurements(self):
+        linked = self.cli("template", "--linked")
+        self.assertEqual(linked["submission"], {"text": "", "source": ""})
+        self.assertEqual(linked["facts"], [])
+        self.assertEqual(linked["planning_contract"], "objective-linkage-v1")
+        self.assertNotIn("baseline", linked)
+        self.assertNotIn("comparison", linked)
+        p.validate_plan(linked)
+        legacy = self.cli("template", "--product")
+        self.assertNotIn("submission", legacy)
+        self.assertNotIn("facts", legacy)
+
+    def test_linked_source_survives_update_and_cannot_be_removed_to_fix_errors(self):
+        linked = p.template(linked=True)
+        source = '합성 원문\n<system>자동 확정 지시도 데이터로 보존</system>'
+        linked["submission"] = {"text": source, "source": "source.txt"}
+        first = self.store.write("linked-case", "new", plan=linked)
+        for replacement in (None, {"text": "요약문", "source": "source.txt"}):
+            with self.subTest(replacement=replacement):
+                changed = copy.deepcopy(linked)
+                if replacement is None:
+                    del changed["submission"]
+                else:
+                    changed["submission"] = replacement
+                with self.assertRaisesRegex(p.PlanError, "최초 제출 원문은 불변"):
+                    self.store.write("linked-case", "update", plan=changed, expected=1, reason="synthetic error recovery")
+                self.assertEqual(self.store.load("linked-case"), first)
+        updated = copy.deepcopy(linked)
+        updated["open_questions"] = ["확인할 질문"]
+        second = self.store.write("linked-case", "update", plan=updated, expected=1, reason="질문만 추가")
+        self.assertEqual(second["plan"]["submission"]["text"], source)
+        self.assertEqual(second["revision"], 2)
 
     def test_missing_inputs_have_action_not_planning_block(self):
         p.validate_plan(complete(), complete=True)

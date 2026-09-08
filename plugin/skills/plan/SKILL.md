@@ -34,6 +34,8 @@ $ARGUMENTS
 - `${CLAUDE_PLUGIN_ROOT}/references/implementation-example.md`
 - `${CLAUDE_PLUGIN_ROOT}/references/objective-linkage.md`
 
+입력 JSON은 작업 폴더 바로 아래 `plan-input-<새번호>.json`에 작성한다. `.sparker-discovery/<case-ID>/` 안에 입력 JSON을 만들지 않는다. 그 폴더는 helper의 리비전 전용이다. `알 수 없는 저장 파일` 오류는 입력 JSON이 과제 폴더 안에 있다는 뜻일 수 있다. 이때 자신이 방금 만든 입력 파일만 작업 폴더로 옮겨 다시 호출하고, 저장소·과거 기록을 지우거나 submission/facts 필드를 삭제하지 않는다. `submission.text`는 처음 읽은 원문 그대로, source는 그 경로로 채운다. `template --linked`에 포함된 submission/facts를 유지한다.
+
 참조 읽기에 실패하면 임의 JSON 형식으로 대체하지 말고 위 경로를 다시 확인한다. 저장은 `python3 -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/plan.py" template --linked`의 출력으로 입력 JSON을 작성한 뒤 같은 helper의 `new`/`update`로 수행한다. 직접 작성한 JSON만으로 저장 완료라고 말하지 않는다. helper가 반환한 과제·리비전과 JSON/Markdown 경로가 있어야 기획서 저장 완료다.
 
 위 네 참조를 읽는다. 저장 도우미는 `${CLAUDE_PLUGIN_ROOT}/scripts/plan.py`, 대표 사례 출력 도우미는 `${CLAUDE_PLUGIN_ROOT}/scripts/example.py`다. `example.py`는 설치된 신뢰 코드로 숫자·상태·다음 행동을 함께 출력하는 읽기 전용 교육 기능이다. 사용자 업무 코드 실행 금지와 구별한다. 실제 로드된 스킬의 절대 경로로 플러그인 루트를 구한다. 사용자 cwd를 플러그인 루트로 가정하지 않는다. Python 3.9+ (`python3`, Windows는 `py -3`)만 필요하다. 외부 패키지 설치 불필요. helper의 `--help`와 `template`은 읽기 전용이다. 경로는 이 SKILL.md 위치에서 바로 구하며 ls/find 등 사전 디렉터리 탐색은 하지 않는다. 저장 거절 시 저장 template도 읽지 않는다.
