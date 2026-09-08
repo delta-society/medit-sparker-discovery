@@ -73,3 +73,5 @@ Camp 브라우저 업로드와 실제 제출 확인은 실행기에서 하지 �
 `.github/workflows/live-qa.yml`은 QA 전용 브랜치에서 `qa/live-request.json`을 명시적으로 바꿀 때 Windows Server 2022·macOS 15 VM을 만든다. 악성 입력을 제외한 16개·36턴을 기획·확정·Camp·활용 4그룹으로 나누어 같은 고정 버전으로 실행하며 한글·공백 작업 경로를 사용한다. 임시 인증은 run/collect 단계의 환경변수로 전달하며 작업 종료 후 저장된 임시 secret을 삭제한다. 아티팩트는 redacted manifest/state/evidence와 원격 SHA만 7일 보관한다. 작업 폴더·Claude 설정·자격 파일은 업로드하지 않는다. 실제 MacBook/Windows 10·11 환경을 대체하지 않는다.
 
 Linux의 `qa/container_entry.py`는 새 컨테이너 network namespace에 OUTPUT 기본 거부와 DNS 차단을 설정하고, `qa/egress_proxy.py`의 CONNECT 프록시 IP:3128만 허용한다. 프록시는 `api.anthropic.com:443`, `claude.ai:443`만 연결하며 거부 호스트 원문은 로그에 쓰지 않는다. 규칙 설정 후 uid/gid 1000과 빈 capability set으로 실행한다. 호스트 홈/인증 파일을 마운트하지 않으며 인증값은 시작 프로세스의 stdin에서 환경변수로만 전달한다. 허용 API 연결은 가능하므로 무통신 환경을 뜻하지 않는다. 컨테이너 밖의 실행 감독 로그·프록시 감사와 내부 대화 증거를 함께 검토한다.
+
+개별 실패를 재검증할 때 요청 파일의 `runner_oses`와 `groups`로 허용된 OS/그룹만 지정할 수 있다. 생략하면 Windows/macOS 및 기획·확정·Camp·활용 전체 그룹이다. 요청의 `scenarios`도 선택 그룹과 일치시킨다. 새 run ID와 새 출력 폴더를 사용하며 이전 실패 증거를 덮어쓰지 않는다. 확정 시험은 실질 계획 변경을 거부하되, 실제 입력과 정확히 같은 KPI 확인 문구만 갱신한 경우를 별도로 허용한다. 나머지 계획/확인 메타데이터와 확정 이후 리비전은 그대로여야 한다.

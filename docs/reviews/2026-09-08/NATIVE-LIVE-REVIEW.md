@@ -74,3 +74,50 @@ macOS VM의 네이티브 프로세스·한글/공백 경로 실행 증거이며 
 안내 품질의 한계도 있다. 여러 응답은 `possible_secrets` 미탐지를 “민감 정보 없음”으로 축약했으며, macOS 원본 거절 T1은 현재 앱이 manifest를 해석하지 않는데도 “초안 상태임을 앱에서도 확인”하라고 안내했다. 원본 파일·manifest 검사와 앱 제출 영수증의 역할을 더 정확히 구분해야 한다. 또한 이 12개 케이스 입력은 **미업로드 사실을 명시**했으므로 업로드 여부가 불확실한 상황의 답변 정확성을 검증하지 않는다. 그 후속 보완·재시험 결과가 필요하며 이 표를 제출 안내 전체 PASS로 사용하지 않는다.
 
 이 문서는 0.5.1 기준 기록이다. 이후 기획 흐름 통합과 제출 안내 보완 후보는 별도의 실행·해시·의미 검토가 필요하다. Linear 완료 상태를 변경하지 않았다.
+
+## 최종 후보 0.5.2 — native-04 재검토
+
+위 native-03 결과·실패는 0.5.1 과거 기록으로 보존한다. 아래는 별도 GitHub 실행 `34194609057`, 소스 `ebee87d9fdb6ce8bb3e5ba969074a0b65b004600`의 새 후보 검토다. 플러그인 ZIP SHA-256은 `6fc4e7d9093d42eb0cf35d6e381c58947ea20af535989f3cace308736098e143`, 실행기 SHA-256은 `009351a066a53a03eba5da711f72d4d5aab607a543c00311b94a275c84671f51`이다. 모델/CLI는 `claude-sonnet-4-6` / `2.1.263`이다.
+
+| OS / 그룹 | 이 절의 판정 |
+|---|---|
+| Windows / finalize | **3턴 PASS** — 승인 대상 계획 유지, 확정·재개·내보내기 |
+| macOS / finalize | **실행기 오거부로 T2 중단**, T3 미실행·재시험 필요 |
+| Windows / camp | **6케이스 12턴 계약 PASS** |
+| macOS / camp | **6케이스 12턴 계약 PASS** |
+
+이 절은 finalize와 camp만 담당한다. planning/reuse의 완료 여부·의미 판정은 별도 검토이며 여기서 전체 8개 job PASS를 주장하지 않는다.
+
+### Windows finalize
+
+증거 루트 `/tmp/discovery-live-qa/native-04/windows-finalize/`. 입력·전체 도구 목록·최종 응답·records와 state를 대조했다. Windows 2022Server AMD64 네이티브 프로세스와 한글/공백 경로에서 실행했다.
+
+- T1은 r1 요약만 하고 확정하지 않았다. native-03처럼 unknown 연결 때문에 무조건 완성 검사가 실패한다고 단정하지 않았다.
+- T2는 실제 확인 발화 전체를 보존해 r2로 확정했다. 최초 r1의 plan과 모든 후속 plan이 동일한 SHA-256 `b14f2012373c6107a9ddef1b82ac3563a68d65f622dfa96866ff1fd60669f451`을 유지했다. 사용자 확인 이후 measurement 등 설계를 추가하지 않았다. confirmation 대상 리비전·plan 해시·범위를 독립 검사했다.
+- T3은 같은 r2를 조회·내보냈다. T2/T3 records 전체가 같고 `approved_revision_files`와 최종 `revision_files`가 일치했다. 실제 export helper 응답과 실행기의 파일 바이트 검사로 확인했다. 원본 Markdown 파일은 다운로드 아티팩트에 포함되지 않았다.
+- 시간은 약 47.03초 / 99.15초 / 15.53초. T2의 검증 입력 형식과 case 폴더 안 임시 파일 때문에 여러 실패가 있었지만, 자신이 만든 임시 파일을 정리한 뒤 정상 helper로 회복했다. 기존 리비전·플러그인을 바꿔 검사를 우회하지 않았다. 수업 사용성이 매끄럽다는 판정은 별도다.
+
+### macOS finalize — 확인 발화 갱신의 오거부
+
+증거 루트 `/tmp/discovery-live-qa/native-04/macos-finalize/`. T1은 draft 요약·확정 거절을 지켰다. T2는 정상 helper update/finalize 후 실행기가 `finalized plan differs from seeded approval target`으로 거부하여 T3을 실행하지 않았다.
+
+T1의 원본 plan과 T2 실제 Write 입력을 재귀 비교한 결과, 차이는 **`/objective/confirmation/quote` 한 필드뿐**이었다. 합성 placeholder를 이번 실제 합성 참가자의 확인 발화 전체로 바꿨다. measurement·KPI 정의·역할·범위 등 기획 내용은 전혀 바뀌지 않았다. 이는 native-03 Windows의 실질 설계 추가와 다르며, 계획 전체 해시만 비교하던 실행기의 false negative다. macOS 전체 수명주기 PASS로 기록하지 않는다.
+
+실행기를 보완하여 새 준비 manifest에 원본 plan 스냅샷을 넣고, 해당 quote가 승인 턴 입력과 정확히 같을 때만 그 한 필드의 변경을 허용했다. 나머지 기획 내용과 확인 메타데이터는 모두 동일해야 하며 Store의 실제 plan 해시·확인 대상 검증 및 확정 이후 파일 집합 고정은 유지한다. 예전 manifest에는 예외를 소급 적용하지 않는다. 합법 quote 변경 후 재개, quote와 함께 measurement 변경, 위조 quote/확인 메타데이터, 이전 manifest 동작의 회귀를 포함해 28개 QA 테스트가 통과했다. **동일 플러그인 후보의 새 macOS 실행이 필요**하다.
+
+### 양 OS Camp — 새 후보 24턴
+
+증거 루트 `/tmp/discovery-live-qa/native-04/{windows-camp,macos-camp}/`. 양쪽의 source/manifest가 위 소스·ZIP 후보와 같고 각 6케이스 12턴 구조 PASS다. 모든 입력·응답·도구 인수를 읽고, 도구 응답의 prepare/inspect manifest·해시·선택 UUID와 턴별 records를 대조했다. 세션·모델 ID도 케이스 manifest와 일치한다.
+
+- 기획서만·원본 거절·미확정 초안·로컬 준비 케이스는 세션 0개, 선택 원본 케이스는 정확한 UUID 1개 또는 2개다.
+- 12케이스 모두 T1/T2 기획 기록이 같은 draft r1이며 자동 확정이나 앱 업로드 도구 호출이 없다.
+- prepare/inspect의 SHA-256이 모두 일치한다. 원본 ZIP 자체가 없는 네이티브 아티팩트이므로 파일 바이트 직접 재다운로드 검증과 구분한다.
+- 응답은 제출 파일 준비와 앱 업로드·영수증 확인을 구분하고 원본 선택 시 마스킹 없는 범위를 알린다. 이 케이스들은 미업로드 사실을 사용자가 명시하므로 제출 여부 불확실 조건은 별도 경계 시험으로 판단한다.
+
+| 입력 종류 | Windows ZIP SHA-256 | macOS ZIP SHA-256 |
+|---|---|---|
+| 기획서만 4케이스 | `0dccb57ca7e4c972ab0bce46c1123c96057e57dcc02310a85deaf3d49f6c4fa2` | 같은 해시 |
+| 선택 세션 1개 | `b8cb7695791eb3cd0ecbade2ae1017da75a03999e9aca47fe3c24a7f09d224d8` | `8fa0b8efe363ddb7cd02f281bf75e7316764850dfd6fc9dc7dcfbd22aac025e5` |
+| 선택 세션 2개 | `a3f6d67997416291eca52968b9e638790e56518a1f81ea0fcc6b14e7e8dff0ab` | `5306a43971e2a4c248e937eea430e4322948531ca0b429befa47888f78f87a30` |
+
+첫 준비 턴은 Windows 약 38.5–48.9초, macOS 37.2–59.6초였고 재검사 턴은 약 12.1–22.1초였다. 반복 경로 탐색·잘못된 초기 scripts 경로에서 회복하는 도구 호출은 남아 있다. 일부 응답의 “민감 정보 없음” 축약은 보조 패턴 검사 결과로만 읽어야 하며 민감정보 부재 보장으로 사용하지 않는다. 실제 참가자 권한·운영 배포·보관/삭제 정책이나 수업 리허설의 판정은 아니다.

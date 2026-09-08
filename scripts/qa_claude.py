@@ -5,6 +5,7 @@ This runner is NOT a sandbox. Run tool-enabled models only in a disposable
 environment without participant data. See docs/claude-qa.md.
 """
 import argparse
+import copy
 import hashlib
 import importlib.util
 import json
@@ -100,6 +101,7 @@ def prepare(output, model, version, selected=(), budget=15.0, turn_budget=0.5, t
             plan.validate_plan(payload, complete=True)
             seeded = plan.Store(work / '.sparker-discovery').write('qa-finalize', 'new', plan=payload)
             scenario['expected_final_plan_sha256'] = seeded['plan_sha256']
+            scenario['expected_final_plan'] = seeded['plan']
         if scenario.get('camp'):
             payload = plan.template(linked=True)
             plan.Store(work / '.sparker-discovery').write('qa-case', 'new', plan=payload)
@@ -218,6 +220,27 @@ def parse_events(text, session_id, model):
     return events, result, calls
 
 
+def matches_approval_target(record, scenario):
+    expected_hash = scenario.get('expected_final_plan_sha256')
+    if record['plan_sha256'] == expected_hash:
+        return True
+    expected = scenario.get('expected_final_plan')
+    # Old prepared runs retain their exact-hash rule. New runs may replace only
+    # the synthetic KPI confirmation quote with this turn's actual input.
+    if not isinstance(expected, dict) or plan.digest(expected) != expected_hash:
+        return False
+    actual = copy.deepcopy(record['plan'])
+    confirmation = actual.get('objective', {}).get('confirmation')
+    original = expected.get('objective', {}).get('confirmation')
+    authorized = scenario.get('finalize_on_turn')
+    if not isinstance(confirmation, dict) or not isinstance(original, dict) or not authorized:
+        return False
+    if confirmation.get('quote') != scenario['turns'][authorized - 1]:
+        return False
+    confirmation['quote'] = original.get('quote')
+    return actual == expected
+
+
 def inspect_records(work, scenario, previous, turn_number=0, approved=None):
     current = {}
     records = []
@@ -246,7 +269,7 @@ def inspect_records(work, scenario, previous, turn_number=0, approved=None):
                     authorized = scenario.get('finalize_on_turn')
                     require(authorized is not None and turn_number >= authorized, 'unapproved finalization')
                     if scenario.get('finalizable'):
-                        require(record['plan_sha256'] == scenario.get('expected_final_plan_sha256'),
+                        require(matches_approval_target(record, scenario),
                                 'finalized plan differs from seeded approval target')
                     quote = record['confirmation']['quote'].strip()
                     require(len(quote) >= 8 and quote in scenario['turns'][authorized - 1], 'confirmation quote was not supplied by synthetic participant')
@@ -265,7 +288,7 @@ def finish_checks(work, scenario, records):
     if scenario.get('finalizable'):
         require(records and all(r['case_id'] == scenario['expected_case_id'] for r in records), 'unexpected case identity')
         require(records[-1]['status'] == 'finalized', 'finalized revision missing')
-        require(records[-1]['plan_sha256'] == scenario.get('expected_final_plan_sha256'),
+        require(matches_approval_target(records[-1], scenario),
                 'finalized plan differs from seeded approval target')
         exported = work / 'final-plan.md'
         require(exported.is_file() and exported.read_bytes() == plan.markdown(records[-1]).encode('utf-8'), 'export differs from finalized revision')

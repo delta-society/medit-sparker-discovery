@@ -366,6 +366,59 @@ class RunnerTests(unittest.TestCase):
         self.assertNotEqual(state.get('structural_status'), 'PASS')
         self.assertEqual(len(state['cases']['finalize-lifecycle']['turns']), 1)
 
+    def test_actual_kpi_confirmation_quote_can_update_and_remain_frozen_on_resume(self):
+        scenario, work, store = self.prepare_finalization()
+        calls = []
+        def capture(*args):
+            calls.append(args)
+            if len(calls) == 2:
+                updated = store.load('qa-finalize')['plan']
+                updated['objective']['confirmation']['quote'] = scenario['turns'][1]
+                store.write('qa-finalize', 'update', expected=1, reason='actual synthetic confirmation', plan=updated)
+                self.finalize_synthetic(store, scenario)
+            return 0, stream(self.sid), '', False
+        self.assertEqual(self.fake_run(2, capture)['status'], 'PAUSED')
+        final = store.load('qa-finalize')
+        self.assertNotEqual(final['plan_sha256'], scenario['expected_final_plan_sha256'])
+        approved = qa.read(self.root / 'state.json')['cases']['finalize-lifecycle']['approved_revision_files']
+        def export(*args):
+            (work / 'final-plan.md').write_bytes(qa.plan.markdown(final).encode('utf-8'))
+            return 0, stream(self.sid), '', False
+        self.assertEqual(self.fake_run(capture=export)['status'], 'STRUCTURAL_PASS')
+        progress = qa.read(self.root / 'state.json')['cases']['finalize-lifecycle']
+        self.assertEqual(progress['approved_revision_files'], approved)
+        self.assertEqual(progress['revision_files'], approved)
+
+    def test_confirmation_quote_exception_does_not_allow_other_design_changes(self):
+        scenario, work, store = self.prepare_finalization()
+        updated = store.load('qa-finalize')['plan']
+        updated['objective']['confirmation']['quote'] = scenario['turns'][1]
+        updated['linkage']['measurement']['record_mapping'] = 'UNAPPROVED NEW MEASUREMENT DESIGN'
+        store.write('qa-finalize', 'update', expected=1, reason='synthetic changed measurement', plan=updated)
+        final = self.finalize_synthetic(store, scenario)
+        self.assertEqual(store.load('qa-finalize'), final)
+        with self.assertRaisesRegex(ValueError, 'finalized plan differs from seeded approval target'):
+            qa.inspect_records(work, scenario, {}, 2)
+
+    def test_confirmation_quote_exception_requires_exact_input_and_new_manifest(self):
+        scenario, work, store = self.prepare_finalization()
+        updated = store.load('qa-finalize')['plan']
+        updated['objective']['confirmation']['quote'] = scenario['turns'][1]
+        store.write('qa-finalize', 'update', expected=1, reason='synthetic confirmation update', plan=updated)
+        final = self.finalize_synthetic(store, scenario)
+        self.assertTrue(qa.matches_approval_target(final, scenario))
+        legacy = dict(scenario)
+        legacy.pop('expected_final_plan')
+        self.assertFalse(qa.matches_approval_target(final, legacy))
+        tampered = qa.read(work / '.sparker-discovery/qa-finalize/r000003/plan.json')
+        tampered['plan']['objective']['confirmation']['quote'] += ' invented consent'
+        tampered['plan_sha256'] = qa.plan.digest(tampered['plan'])
+        self.assertFalse(qa.matches_approval_target(tampered, scenario))
+        tampered['plan']['objective']['confirmation']['quote'] = scenario['turns'][1]
+        tampered['plan']['objective']['confirmation']['explicit'] = False
+        tampered['plan_sha256'] = qa.plan.digest(tampered['plan'])
+        self.assertFalse(qa.matches_approval_target(tampered, scenario))
+
     def test_stale_approval_cannot_finalize_changed_plan_on_later_turn(self):
         scenario, work, store = self.prepare_finalization()
         self.pause_after_approval(store, scenario)

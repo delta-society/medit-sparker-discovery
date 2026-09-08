@@ -6,13 +6,26 @@ on:
 permissions:
   contents: read
 jobs:
+  request-matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.request.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - id: request
+        name: Validate requested native runners and groups
+        run: python -X utf8 qa/ci_matrix.py
   native:
+    needs: request-matrix
     timeout-minutes: 90
     strategy:
       fail-fast: false
-      matrix:
-        os: [windows-2022, macos-15]
-        group: [planning, finalize, camp, reuse]
+      matrix: ${{ fromJSON(needs.request-matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     env:
       QA_GROUP: ${{ matrix.group }}
