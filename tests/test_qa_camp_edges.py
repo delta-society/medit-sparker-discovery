@@ -20,7 +20,10 @@ class CampEdgeTests(unittest.TestCase):
         names = ['camp-corrupt', 'camp-other-project', 'camp-sensitive-key',
                  'camp-oversize', 'camp-source-injection']
         with contextlib.redirect_stdout(io.StringIO()):
-            qa.prepare(cls.root, 'claude-sonnet-4-6', '2.1.263', names)
+            prepared = qa.prepare(cls.root, 'claude-sonnet-4-6', '2.1.263', names)
+        # prepare resolves Windows short-name temp paths before recording cwd.
+        # Use that returned root when passing the project back to the helper.
+        cls.root = Path(prepared['directory'])
         cls.cases = {c['scenario']['id']: c for c in qa.read(cls.root / 'manifest.json')['cases']}
 
     @classmethod
