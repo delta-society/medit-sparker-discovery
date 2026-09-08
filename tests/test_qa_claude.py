@@ -135,8 +135,8 @@ class RunnerTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             qa.prepare(other, 'claude-sonnet-4-6', '2.1.263')
         cases = qa.read(other / 'manifest.json')['cases']
-        self.assertEqual(len(cases), 12)
-        self.assertEqual(len({c['session_id'] for c in cases}), 12)
+        self.assertEqual(len(cases), 13)
+        self.assertEqual(len({c['session_id'] for c in cases}), 13)
         scenario = next(c['scenario'] for c in cases if c['scenario']['id'] == 'camp-plan-only')
         work = other / 'camp-plan-only/work'
         archive = work / '.sparker-submissions/test.zip'
@@ -213,6 +213,109 @@ class RunnerTests(unittest.TestCase):
         before[next(iter(before))] = 'wrong'
         with self.assertRaisesRegex(ValueError, 'immutable revision'):
             qa.inspect_records(work, {}, before)
+
+    def test_finalization_requires_authorized_turn_and_exact_export(self):
+        other = self.root.parent / 'final'
+        with contextlib.redirect_stdout(io.StringIO()):
+            qa.prepare(other, 'claude-sonnet-4-6', '2.1.263', ['finalize-lifecycle'])
+        case = qa.read(other / 'manifest.json')['cases'][0]
+        scenario = case['scenario']
+        work = other / 'finalize-lifecycle/work'
+        store = qa.plan.Store(work / '.sparker-discovery')
+        record = store.load('qa-finalize')
+        import linkage
+        c = dict(actor='human', quote=scenario['turns'][1], revision=1,
+                 plan_sha256=record['plan_sha256'], explicit=True,
+                 scopes=list(qa.plan.SCOPES) + list(linkage.SCOPES))
+        final = store.write('qa-finalize', 'finalize', expected=1, confirmation=c)
+        with self.assertRaisesRegex(ValueError, 'unapproved finalization'):
+            qa.inspect_records(work, scenario, {}, 1)
+        _, records = qa.inspect_records(work, scenario, {}, 2)
+        with self.assertRaisesRegex(ValueError, 'export differs'):
+            qa.finish_checks(work, scenario, records)
+        (work / 'final-plan.md').write_bytes(qa.plan.markdown(final).encode('utf-8'))
+        qa.finish_checks(work, scenario, records)
+
+    def prepare_finalization(self):
+        self.root = self.root.parent / 'finalization-run'
+        with contextlib.redirect_stdout(io.StringIO()):
+            qa.prepare(self.root, 'claude-sonnet-4-6', '2.1.263', ['finalize-lifecycle'])
+        self.manifest = qa.read(self.root / 'manifest.json')
+        case = self.manifest['cases'][0]
+        self.sid = case['session_id']
+        work = self.root / 'finalize-lifecycle/work'
+        return case['scenario'], work, qa.plan.Store(work / '.sparker-discovery')
+
+    def finalize_synthetic(self, store, scenario, case_id='qa-finalize'):
+        import linkage
+        old = store.load(case_id)
+        confirmation = dict(actor='human', quote=scenario['turns'][1],
+                            revision=old['revision'], plan_sha256=old['plan_sha256'],
+                            explicit=True, scopes=list(qa.plan.SCOPES) + list(linkage.SCOPES))
+        return store.write(case_id, 'finalize', expected=old['revision'], confirmation=confirmation)
+
+    def pause_after_approval(self, store, scenario):
+        calls = []
+        def capture(*args):
+            calls.append(args)
+            if len(calls) == 2:
+                self.finalize_synthetic(store, scenario)
+            return 0, stream(self.sid), '', False
+        self.assertEqual(self.fake_run(2, capture)['status'], 'PAUSED')
+        state = qa.read(self.root / 'state.json')
+        progress = state['cases']['finalize-lifecycle']
+        self.assertEqual(progress['approved_revision_files'], progress['revision_files'])
+        return progress['approved_revision_files']
+
+    def test_stale_approval_cannot_finalize_changed_plan_on_later_turn(self):
+        scenario, work, store = self.prepare_finalization()
+        self.pause_after_approval(store, scenario)
+        def capture(*args):
+            reopened = store.write('qa-finalize', 'reopen', expected=2, reason='synthetic unauthorized reopen')
+            changed = reopened['plan']
+            changed['selected_change']['change'] += ' UNAPPROVED CHANGE'
+            store.write('qa-finalize', 'update', expected=3, reason='synthetic unauthorized edit', plan=changed)
+            replacement = self.finalize_synthetic(store, scenario)
+            (work / 'final-plan.md').write_bytes(qa.plan.markdown(replacement).encode('utf-8'))
+            return 0, stream(self.sid), '', False
+        with self.assertRaisesRegex(ValueError, 'approved revision set changed'):
+            self.fake_run(capture=capture)
+        state = qa.read(self.root / 'state.json')
+        self.assertNotEqual(state.get('structural_status'), 'PASS')
+        self.assertEqual(len(state['cases']['finalize-lifecycle']['turns']), 2)
+
+    def test_finalization_rejects_another_case_with_valid_confirmation(self):
+        scenario, work, store = self.prepare_finalization()
+        store.write('wrong-case', 'new', plan=store.load('qa-finalize')['plan'])
+        self.finalize_synthetic(store, scenario, 'wrong-case')
+        with self.assertRaisesRegex(ValueError, 'unexpected case identity'):
+            qa.inspect_records(work, scenario, {}, 2)
+
+    def test_frozen_approval_survives_resume_and_exports_same_final(self):
+        scenario, work, store = self.prepare_finalization()
+        approved = self.pause_after_approval(store, scenario)
+        final = store.load('qa-finalize')
+        calls = []
+        def capture(args, *unused):
+            calls.append(args)
+            (work / 'final-plan.md').write_bytes(qa.plan.markdown(final).encode('utf-8'))
+            return 0, stream(self.sid), '', False
+        self.assertEqual(self.fake_run(capture=capture)['status'], 'STRUCTURAL_PASS')
+        self.assertEqual(len(calls), 1)
+        self.assertIn('--resume', calls[0])
+        progress = qa.read(self.root / 'state.json')['cases']['finalize-lifecycle']
+        self.assertEqual(progress['approved_revision_files'], approved)
+        self.assertEqual(progress['revision_files'], approved)
+
+    def test_frozen_approval_rejects_added_revision_before_resume_spawn(self):
+        scenario, work, store = self.prepare_finalization()
+        self.pause_after_approval(store, scenario)
+        store.write('qa-finalize', 'reopen', expected=2, reason='synthetic between-run change')
+        def capture(*args):
+            self.fail('must reject changed approval before spawning Claude')
+        with self.assertRaisesRegex(ValueError, 'approved revision set changed'):
+            self.fake_run(capture=capture)
+        self.assertEqual(qa.read(self.root / 'state.json')['reserved_usd'], 1)
 
 
 if __name__ == '__main__':
