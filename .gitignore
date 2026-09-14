@@ -11,3 +11,5 @@ qa-release.zip
 qa-artifacts/
 
 .sparker-learning-progress.json
+
+node_modules/
