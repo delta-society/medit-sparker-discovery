@@ -38,7 +38,7 @@ ZIP은 전체 안전 검사 후 후보 목록을 반환한다. PDF는 `needs_hos
 }
 ```
 
-`stage`: scope/environment/implement/change/test/submit/paused. 자유문은 각각 최대 8,000자. `show`의 `state`만 새 입력 파일로 사용한다. 갱신은 전체 state이며 기존 evidence 배열을 보존하고 뒤에 추가한다. 기획 원본은 출처 해시로 연결하고 그 내용을 복제하거나 고치지 않는다.
+`stage`: scope/environment/implement/change/test/submit/paused/bootstrap/spec/workstream/baseline/demo. 자유문은 각각 최대 8,000자. `show`의 `state`만 새 입력 파일로 사용한다. 갱신은 전체 state이며 기존 evidence 배열을 보존하고 뒤에 추가한다. 기획 원본은 출처 해시로 연결하고 그 내용을 복제하거나 고치지 않는다.
 
 각 evidence는 아래 키가 정확히 필요하다:
 
@@ -46,7 +46,11 @@ ZIP은 전체 안전 검사 후 후보 목록을 반환한다. PDF는 `needs_hos
 {"kind":"normal","command":"실제로 실행한 명령","input":"합성 입력 A","expected":"기대 결과","observed":"실제 관측 결과","exit_code":0,"outcome":"pass","path":"evidence/normal.txt","sha256":"실제 파일 바이트의 64자리 SHA-256"}
 ```
 
-`kind`: environment/execution/change/normal/exception/second_input. `outcome`: pass/fail/blocked. UI 도구 등 종료 코드가 없으면 null. 기대된 예외의 비영 종료는 통과일 수 있다. 해시는 도구로 실제 계산한다. 증거 경로는 실습 폴더 상대 경로이며 실제 비어 있지 않은 UTF-8 시험/실행 기록 파일을 만든다. 새 시험에는 새 파일명을 쓴다. 각 종류의 마지막 결과가 우선이며 과거 통과로 새 실패를 가리지 않는다. 수정 후 시험을 다시 한다. 도우미는 실행/발화 진위를 인증하지 않으므로 에이전트의 실제 도구 출력과 대조해야 한다.
+`kind`: environment/execution/change/normal/exception/second_input/baseline/browser/replay/demo. `outcome`: pass/fail/blocked. UI 도구 등 종료 코드가 없으면 null. 기대된 예외의 비영 종료는 통과일 수 있다. 해시는 도구로 실제 계산한다. 증거 경로는 실습 폴더 상대 경로이며 실제 비어 있지 않은 UTF-8 시험/실행 기록 파일을 만든다. 새 시험에는 새 파일명을 쓴다. 각 종류의 마지막 결과가 우선이며 과거 통과로 새 실패를 가리지 않는다. 수정 후 시험을 다시 한다. 도우미는 실행/발화 진위를 인증하지 않으므로 에이전트의 실제 도구 출력과 대조해야 한다.
+
+## 강의 진행 확장
+
+선택적인 `lesson` 상태, 제품 우선 시작, 강의 대기·재개는 [week2-lesson.md](week2-lesson.md)를 따른다. 기존 리비전은 그대로 읽는다. 새 구간은 bootstrap/spec/workstream/baseline/demo이고 증거 종류는 baseline/browser/replay/demo도 지원한다. 사람의 workstream 확인 전에는 bootstrap/spec(그 구간에서 paused인 경우 포함)에서 feature와 scope_confirmation을 비워 두며, 이미 확인한 발화를 지어내지 않는다. 초기 제품 생성 뒤 확인한 범위만 새 리비전에 기록한다.
 
 ## 저장·재개·제출 경계
 

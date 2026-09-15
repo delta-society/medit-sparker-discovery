@@ -17,8 +17,13 @@ from portable import configure_stdio
 MAX_FILE = 2 * 1024 * 1024
 MAX_TOTAL = 20 * 1024 * 1024
 MAX_FILES = 100
-STAGES = ('scope', 'environment', 'implement', 'change', 'test', 'submit', 'paused')
-KINDS = ('environment', 'execution', 'change', 'normal', 'exception', 'second_input')
+STAGES = ('scope', 'environment', 'implement', 'change', 'test', 'submit', 'paused',
+          'bootstrap', 'spec', 'workstream', 'baseline', 'demo')
+REQUIRED_KINDS = ('environment', 'execution', 'change', 'normal', 'exception', 'second_input')
+KINDS = REQUIRED_KINDS + ('browser', 'replay', 'baseline', 'demo')
+LESSON_PHASES = ('bootstrap', 'spec', 'workstream', 'baseline', 'improve', 'verify', 'demo')
+LESSON_KEYS = ('phase', 'waiting_for', 'product_path', 'local_url', 'workstream',
+               'acceptance_criteria', 'learner_observation')
 ARCHIVES = {'.zip', '.tar', '.gz', '.tgz', '.bz2', '.xz', '.7z', '.rar', '.jar', '.docx', '.xlsx', '.pptx'}
 EXTENSIONS = {'.py', '.js', '.ts', '.tsx', '.jsx', '.html', '.css', '.sql', '.sh', '.ps1', '.r', '.go', '.rs', '.java', '.c', '.cpp', '.h', '.cs', '.md', '.txt', '.json', '.toml', '.yaml', '.yml', '.csv'}
 
@@ -110,9 +115,31 @@ def project_file(project, name):
     return safe_path(project / name)
 
 
+def validate_lesson(lesson):
+    keys(lesson, LESSON_KEYS)
+    for key in LESSON_KEYS:
+        if key != 'acceptance_criteria':
+            require(isinstance(lesson[key], str) and len(lesson[key]) <= 8000, '문자열 필요: lesson.' + key)
+    require(lesson['phase'] in LESSON_PHASES, '알 수 없는 lesson 단계')
+    require(lesson['waiting_for'] in ('none', 'learner', 'instructor'), 'lesson 대기 대상 오류')
+    criteria = lesson['acceptance_criteria']
+    require(isinstance(criteria, list) and len(criteria) <= 100, 'acceptance_criteria 목록 필요')
+    for criterion in criteria:
+        require(isinstance(criterion, str) and len(criterion) <= 8000, 'acceptance_criteria 문자열 필요')
+
+
 def validate_state(s):
-    keys(s, ('summary', 'feature', 'scope_confirmation', 'environment', 'structure', 'desired_change', 'change_confirmation', 'stage', 'next_action', 'blockers', 'evidence'))
-    for key in ('summary', 'feature', 'scope_confirmation', 'next_action'):
+    fields = ('summary', 'feature', 'scope_confirmation', 'environment', 'structure', 'desired_change', 'change_confirmation', 'stage', 'next_action', 'blockers', 'evidence')
+    # Do not inject defaults: existing version-1 records and their hashes stay unchanged.
+    has_lesson = isinstance(s, dict) and 'lesson' in s
+    keys(s, fields + (('lesson',) if has_lesson else ()))
+    if has_lesson:
+        validate_lesson(s['lesson'])
+    # Product bootstrap/spec may precede feature selection, never imply scope approval.
+    unscoped = (has_lesson and s['lesson']['phase'] in ('bootstrap', 'spec')
+                and s['stage'] in (s['lesson']['phase'], 'paused') and s['lesson']['workstream'] == ''
+                and s['feature'] == '' and s['scope_confirmation'] == '')
+    for key in ('summary', 'next_action') + (() if unscoped else ('feature', 'scope_confirmation')):
         text(s[key])
     for key in ('environment', 'structure', 'desired_change', 'change_confirmation'):
         require(isinstance(s[key], str) and len(s[key]) <= 8000, '문자열 필요: ' + key)
@@ -145,10 +172,11 @@ def evidence_check(s, project):
 def ready(s, findings):
     # Latest evidence per kind wins: a later failure must not be masked by an old pass.
     latest = {e['kind']: e for e in s['evidence']}
-    return (not findings and not s['blockers'] and bool(s['environment'].strip())
+    return (not findings and not s['blockers'] and bool(s['feature'].strip())
+            and bool(s['scope_confirmation'].strip()) and bool(s['environment'].strip())
             and bool(s['structure'].strip()) and bool(s['desired_change'].strip())
             and bool(s['change_confirmation'].strip())
-            and all(k in latest and latest[k]['outcome'] == 'pass' for k in KINDS))
+            and all(k in latest and latest[k]['outcome'] == 'pass' for k in REQUIRED_KINDS))
 
 
 def put_new(path, data):
@@ -225,6 +253,13 @@ def report(r):
                   '  - 명령: ' + e['command'], '  - 입력: ' + e['input'], '  - 기대: ' + e['expected'],
                   '  - 증거: ' + e['path'] + ' (SHA-256 ' + e['sha256'] + ')']
     lines += ['## 막힌 점'] + s['blockers'] + ['## 다음 행동', s['next_action']]
+    if 'lesson' in s:
+        lesson = s['lesson']
+        lines += ['## 학습 진행', '단계: ' + lesson['phase'], '대기 대상: ' + lesson['waiting_for'],
+                  '제품 경로: ' + lesson['product_path'], '로컬 URL: ' + lesson['local_url'],
+                  '작업 흐름: ' + lesson['workstream'], '### 수용 기준']
+        lines += ['- ' + criterion for criterion in lesson['acceptance_criteria']]
+        lines += ['### 학습자 관찰', lesson['learner_observation']]
     return ('\n\n'.join(lines) + '\n').encode('utf-8')
 
 

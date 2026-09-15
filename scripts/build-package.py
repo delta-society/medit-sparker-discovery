@@ -8,7 +8,7 @@ PLUGIN_FILES = (
     '.claude-plugin/plugin.json', 'skills/plan/SKILL.md', 'skills/submit/SKILL.md',
     'skills/onboarding/SKILL.md', 'skills/week1/SKILL.md',
     'skills/week1-submit/SKILL.md', 'skills/week2-submit/SKILL.md',
-    'skills/week2/SKILL.md', 'references/week2-implementation.md', 'scripts/implementation.py',
+    'skills/week2/SKILL.md', 'references/week2-implementation.md', 'references/week2-lesson.md', 'scripts/implementation.py',
     'references/week1-experience.md', 'references/learning-progress.md',
     'references/conversation.md', 'references/data-contract.md',
     'references/implementation-example.md', 'references/objective-linkage.md',
