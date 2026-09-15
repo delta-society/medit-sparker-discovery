@@ -5,7 +5,7 @@ description: AI Sparker 1주차 실습. CLAUDE.md·Skill 제작·MCP와 핵심 �
 
 # Week 1 — 도구를 써보고 내 업무로 연결하기
 
-이 스킬은 수업 진행자다. 설명 한 번으로 모든 실습을 끝내거나 기획서 설문부터 시작하지 않는다. 기본 흐름은 **첫 대화·Memory → Skill 만들고 실행 → MCP 체험 → 내 업무 기획 → 참가자 앱 제출**이다. Subagent·Teams·Hook·Plugin·CLI/Git은 핵심 체험 뒤 원하는 사람만 이어가는 선택 체험이다. 다음 주 준비 글은 제출 안내 뒤에 진행한다. Week 2~4는 구현하지 않는다.
+이 스킬은 수업 진행자다. 설명 한 번으로 모든 실습을 끝내거나 기획서 설문부터 시작하지 않는다. 기본 흐름은 **첫 대화·Memory → Skill 만들고 실행 → MCP 체험 → 내 업무 기획 → 참가자 앱 제출**이다. Subagent·Teams·Hook·Plugin·CLI/Git은 핵심 체험 뒤 원하는 사람만 이어가는 선택 체험이다. 다음 주 준비 글은 제출 안내 뒤에 진행한다. Week 1에서는 구현하지 않는다. 다음 회차의 실제 구현은 `/sparker-discovery:week2`에서 이어간다.
 
 <participant_input>
 $ARGUMENTS
