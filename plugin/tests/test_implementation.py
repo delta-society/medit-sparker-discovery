@@ -161,6 +161,10 @@ class ImplementationTests(unittest.TestCase):
         inp = self.p/'state.json'; inp.write_text(json.dumps(state()))
         cli('new','task-a','--plan',str(self.plan),'--input',str(inp))
         first = (self.store.folder/'r000001.json').read_bytes()
+        incomplete = cli('export', 'task-a', '--output', str(self.p/'incomplete.md'))
+        self.assertEqual(incomplete['state'], 'local_report_only')
+        self.assertIn('환경 확인', (self.p/'incomplete.md').read_text(encoding='utf-8'))
+        self.assertFalse(cli('show', 'task-a')['ready_for_local_package'])
         app = self.p/'app.py'
         app.write_text('import sys\nprint(sys.argv[1].strip())\n', encoding='utf-8')
         s = state(); s.update(environment='실제 Python subprocess', structure='app.py 입력→strip→stdout', desired_change='대문자로 출력', change_confirmation='합성 테스트 발화: 대문자 선택', stage='submit', next_action='로컬 파일 목록 검토')

@@ -1,3 +1,7 @@
+# 주차별 제출 경계
+
+1주차는 `/sparker-discovery:week1-submit`으로 아래 기존 기획 ZIP 계약을 유지합니다. 2주차는 `/sparker-discovery:week2-submit`으로 `implementation.py export/package`를 사용합니다. 미완료 보고서는 허용하지만 구현 ZIP 검증은 생략하지 않습니다. 두 명령은 로컬 준비만 하며, 2주차 구현 ZIP의 앱 접수 지원은 별도 확인 대상입니다. 기존 `/sparker-discovery:submit`은 확인된 주차로 연결하고 불명확하면 한 번 묻습니다.
+
 # Sparker Camp 제출 기능
 
 ## 2026-09-08 인터뷰 후 운영 요구사항

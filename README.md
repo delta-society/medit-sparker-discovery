@@ -31,8 +31,16 @@ Claude와 작은 작업을 해보고, 반복 요청을 만들고, 내 업무에 
 
 기획서는 내용을 확인하고 동의하면 확정합니다. 모르는 자료나 규칙은 남겨두고 초안으로 이어갈 수도 있습니다.
 
-“제출 준비해줘”라고 말하면 기획서가 담긴 ZIP을 만듭니다. 파일을 확인한 뒤 [참가자 앱](https://leaderboard-production-eac2.up.railway.app/)의 같은 회차에 직접 올리세요. **파일 준비와 실제 제출은 별개**입니다. PDF는 개인 보관·공유용 선택 사항이며 제출 ZIP에는 포함되지 않습니다.
+`/sparker-discovery:week1-submit`은 1주차 기획서 ZIP을 만듭니다. 파일을 확인한 뒤 [참가자 앱](https://leaderboard-production-eac2.up.railway.app/)의 같은 회차에 직접 올리세요. **파일 준비와 실제 제출은 별개**입니다. PDF는 개인 보관·공유용 선택 사항이며 제출 ZIP에는 포함되지 않습니다.
 
 다음 주 준비 글은 Slack에 직접 게시합니다. 기획서는 중복 첨부하지 않습니다.
 
 [실습·재개·제출 상세 안내](docs/plugin-guide.md) · [공통 업데이트 안내](https://github.com/delta-society/medit-sparker-plugin#업데이트)
+
+## 주차별 제출 명령
+
+- `/sparker-discovery:week1` → `/sparker-discovery:week1-submit`: 기획서 ZIP (초안 가능, 요청한 경우만 선택 원본 포함).
+- `/sparker-discovery:week2` → `/sparker-discovery:week2-submit`: 구현 보고서와 검증된 코드·실행 방법·시험 결과 ZIP. 미완료도 중간 보고서는 만들 수 있지만 완료 ZIP 검사는 생략하지 않습니다. 앱의 2주차 구현 ZIP 접수 지원은 별도 확인이 필요합니다.
+- 기존 `/sparker-discovery:submit`과 “제출 준비해줘”는 확인된 주차를 재사용합니다. 주차가 불명확하면 한 번 묻고, 임의로 1주차를 고르지 않습니다.
+
+모두 로컬 파일 준비이며 자동 업로드하지 않습니다. 이 변경은 **Discovery 0.8.0 검토 후보**로, 원격 출시·참가자 배포 완료를 뜻하지 않습니다.

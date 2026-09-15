@@ -49,6 +49,9 @@ class PackageTests(unittest.TestCase):
             self.assertEqual(set(archive.namelist()), expected)
             self.assertTrue(all(b'SYNTHETIC PRIVATE MARKER' not in archive.read(n) for n in archive.namelist()))
             archive.extractall(dest)
+        for name in ('submit', 'week1-submit', 'week2-submit'):
+            skill = dest / 'skills' / name / 'SKILL.md'
+            self.assertIn('name: ' + name + '\n', skill.read_text(encoding='utf-8'))
         def run(script, *args):
             r = subprocess.run([sys.executable, str(dest / 'scripts' / script), *args], cwd=self.base,
                                capture_output=True, text=True, encoding='utf-8')
