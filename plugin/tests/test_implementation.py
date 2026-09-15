@@ -81,6 +81,13 @@ class ImplementationTests(unittest.TestCase):
         path = self.p / 'intake.zip'
         with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
             for name, data in entries:
+                if isinstance(name, str):
+                    # Preserve hostile bytes even on Windows; ZipInfo otherwise
+                    # normalizes the very filename this fixture needs to test.
+                    info = zipfile.ZipInfo('fixture')
+                    info.filename = info.orig_filename = name
+                    info.compress_type = zipfile.ZIP_DEFLATED
+                    name = info
                 z.writestr(name, data)
         return path
 

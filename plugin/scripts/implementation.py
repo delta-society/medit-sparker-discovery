@@ -61,6 +61,9 @@ def intake(path, member=None):
             require(0 < len(infos) <= MAX_FILES, 'ZIP 항목 수 한도')
             names, total = set(), 0
             for item in infos:
+                # ZipInfo normalizes backslashes on Windows and truncates NULs.
+                # Validate the original archive spelling, not only its projection.
+                require(item.orig_filename == item.filename, '정규화된 ZIP 경로 금지')
                 n = item.filename.rstrip('/') if item.is_dir() else item.filename
                 relative(n)
                 require(n.casefold() not in names, 'ZIP 중복 경로')
