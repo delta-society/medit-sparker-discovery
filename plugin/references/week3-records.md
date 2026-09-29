@@ -21,6 +21,6 @@ python3 "<plugin>/scripts/evaluation.py" --case my-product confirm --digest "<sh
 python3 "<plugin>/scripts/evaluation.py" --case my-product pdf
 ```
 
-성공 시 반환된 evaluation.pdf를 첨부하거나 실제 파일 링크로 보여준다. PDF는 확정 리비전에 묶이며 수정/save 시 이전 확인은 새 초안에 승계되지 않는다. 같은 PDF가 이미 있으면 해당 경로를 사용한다. 실패 시 저장된 평가서는 보존한다. 브라우저가 없으면 기존 Edge/Chrome 경로를 확인하고 `SPARKER_PDF_BROWSER`에 절대경로를 지정할 수 있다. 설치를 임의 수행하지 않는다. 한 장을 넘으면 초안을 더 명료하게 요약하고 다시 확인받는다.
+성공 시 반환된 evaluation.pdf를 첨부하거나 실제 파일 링크로 보여준다. PDF는 확정 리비전에 묶이며 수정/save 시 이전 확인은 새 초안에 승계되지 않는다. 같은 PDF가 이미 있으면 해당 경로를 사용한다. 0.12.0부터 receipt에 PDF SHA-256을 기록한다. 이전 PDF에 SHA가 없다면 `pdf --refresh`로 같은 confirmed 기록을 새로 렌더링한다(기존 바이트에 사후 서명하지 않음). 제출은 별도 요청 후 week3-submit으로 연결하며 PDF 생성/검토 확인과 외부 전송 동의를 구분한다. 실패 시 저장된 평가서는 보존한다. 브라우저가 없으면 기존 Edge/Chrome 경로를 확인하고 `SPARKER_PDF_BROWSER`에 절대경로를 지정할 수 있다. 설치를 임의 수행하지 않는다. 한 장을 넘으면 초안을 더 명료하게 요약하고 다시 확인받는다.
 
 기존 `week3.py`는 과거 연결 실습 기록의 호환 보존용이다. 이번 평가에서는 호출하지 않고 새 `.sparker-evaluation`을 쓴다. 연결 실습 완료·외부 발신·계정 연결은 평가 종료 조건이 아니다. 저장/검토 완료를 진위 인증 또는 실제 운영 효과로 보고하지 않는다.

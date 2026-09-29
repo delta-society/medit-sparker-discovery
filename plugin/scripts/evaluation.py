@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Code-first six-criterion evaluation. Offline revisions and single-page PDF."""
-import argparse, copy, html, json, re, sys, tempfile
+import argparse, copy, hashlib, html, json, os, re, sys, tempfile
 from pathlib import Path
 from plan import PlanError, digest, require, safe_path, ident
 from week3 import clean
@@ -90,21 +90,26 @@ def document(r):
     js='''window.__sparkerPdfReady=(async()=>{await document.fonts.ready;await new Promise(r=>requestAnimationFrame(r));let h=document.body.getBoundingClientRect().height;let w=document.documentElement.scrollWidth;let ok=h<=1015&&w<=794;return {ok,code:ok?null:'layout',height:h,width:w,one_page:true};})();'''
     return '<!doctype html><html lang="ko"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; script-src \'unsafe-inline\'; font-src data:; connect-src \'none\'"><style>'+css+style+'</style><body>'+body+'<script>'+js+'</script></body></html>'
 
-def export(root,r):
+def export(root,r,refresh=False):
     require(r['status']=='confirmed','최종 PDF는 전체 평가서를 보여주고 참가자 확인 후 만듭니다')
     out=safe_path(root/f"pdf-r{r['revision']:06d}")
-    require(not out.exists(),'PDF가 이미 있습니다. 기존 경로를 사용하세요')
+    require(not out.exists() or refresh,'PDF가 이미 있습니다. 기존 경로를 사용하세요')
+    require(load(root)==r, '최신 평가서만 출력할 수 있습니다')
     text=document(r);pdf,observation=print_pdf(text,'<span></span>')
     with tempfile.TemporaryDirectory(prefix='.pdf-',dir=root) as tmp:
         p=Path(tmp);(p/'evaluation.pdf').write_bytes(pdf);(p/'evaluation.html').write_text(text,encoding='utf-8')
-        (p/'receipt.json').write_text(json.dumps(dict(digest=r['digest'],renderer=observation),ensure_ascii=False),encoding='utf-8')
-        p.rename(out)
+        (p/'receipt.json').write_text(json.dumps(dict(digest=r['digest'],sha256=hashlib.sha256(pdf).hexdigest(),renderer=observation),ensure_ascii=False),encoding='utf-8')
+        if out.exists():
+            # Explicit refresh renders the confirmed source again, never attests old bytes.
+            for name in ('evaluation.pdf','evaluation.html','receipt.json'):
+                os.replace(p/name,safe_path(out/name))
+        else:p.rename(out)
     return dict(pdf=str(out/'evaluation.pdf'),html=str(out/'evaluation.html'),renderer=observation)
 
 def main():
     configure_stdio();p=argparse.ArgumentParser();p.add_argument('--root',default='.sparker-evaluation');p.add_argument('--case',default='my-product')
     s=p.add_subparsers(dest='cmd',required=True);s.add_parser('template');s.add_parser('show');a=s.add_parser('save');a.add_argument('--file',required=True)
-    a=s.add_parser('confirm');a.add_argument('--digest',required=True);a.add_argument('--statement',required=True);s.add_parser('pdf')
+    a=s.add_parser('confirm');a.add_argument('--digest',required=True);a.add_argument('--statement',required=True);a=s.add_parser('pdf');a.add_argument('--refresh',action='store_true')
     a=p.parse_args()
     try:
         ident(a.case);root=safe_path(Path(a.root).absolute()/a.case)
@@ -112,7 +117,7 @@ def main():
         elif a.cmd=='save':result=save(root,read(a.file))
         elif a.cmd=='show':result=load(root)
         elif a.cmd=='confirm':result=save(root,load(root)['document'],a.statement,a.digest)
-        else:result=export(root,load(root))
+        else:result=export(root,load(root),a.refresh)
         print(json.dumps(result,ensure_ascii=False,indent=2))
     except (PlanError,PdfError,ValueError,OSError,KeyError,TypeError) as exc:
         print(json.dumps({'error':str(exc)},ensure_ascii=False));return 1
