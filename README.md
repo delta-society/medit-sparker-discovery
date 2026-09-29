@@ -1,5 +1,9 @@
 # AI Sparker — 내 업무로 배우는 AI 실습
 
+## 3주차 코드 기반 평가·한 장 PDF
+
+공통 Sparker 플러그인을 업데이트한 뒤 `/sparker-discovery:week3`으로 시작합니다. Camp 진입은 `/sparker-camp:start 3주차 수업`입니다. 이전 코드를 읽고 여섯 기준으로 상세하게 묻고 답하며, 참가자가 전체 초안을 검토한 뒤 한 장 PDF 평가서를 받습니다. 진행은 `.sparker-evaluation`에 저장해 재개할 수 있습니다. 입력·출력 연결과 제품 수정은 필수가 아니며 기존 1·2주차는 보존합니다. PDF는 Python 3.9+와 기존 Edge/Chrome을 사용합니다. 기존 설치자는 공통 업데이트 안내를 따르며 새 ZIP 설치는 필요하지 않습니다.
+
 ## 2주차 구현 확장
 
 기본 시작은 `/sparker-camp:start`, 직접 진입은 `/sparker-discovery:week2`입니다. 기존 기획 읽기 → 제품 생성·로컬 웹 화면 → 실제 스펙 설명 → workstream 선택·완료 기준 → 실행 → 예상·수정 전후 비교 → 정상/예외/다른 입력/재실행 검증 → 시연·재개/선택 제출 준비로 이어집니다. 원본 기획·Week1 기록·Camp 수집 계약을 바꾸지 않습니다. 실제 업로드·업무 성과는 별도입니다. 구현 기록은 별도 `.sparker-implementation`에 저장하며 기존 학습 진행 스키마에 추가하지 않습니다. 상세는 플러그인의 `references/week2-implementation.md`를 따릅니다.
@@ -43,4 +47,4 @@ Claude와 작은 작업을 해보고, 반복 요청을 만들고, 내 업무에 
 - `/sparker-discovery:week2` → `/sparker-discovery:week2-submit`: 구현 보고서와 검증된 코드·실행 방법·시험 결과 ZIP. 미완료도 중간 보고서는 만들 수 있지만 완료 ZIP 검사는 생략하지 않습니다. 앱의 2주차 구현 ZIP 접수 지원은 별도 확인이 필요합니다.
 - 기존 `/sparker-discovery:submit`과 “제출 준비해줘”는 확인된 주차를 재사용합니다. 주차가 불명확하면 한 번 묻고, 임의로 1주차를 고르지 않습니다.
 
-모두 로컬 파일 준비이며 자동 업로드하지 않습니다. 이 변경은 **Discovery 0.9.1 검토 후보**로, 원격 출시·참가자 배포 완료를 뜻하지 않습니다.
+모두 로컬 파일 준비이며 자동 업로드하지 않습니다. 최신 배포는 [공통 Sparker 설치·업데이트 안내](https://github.com/delta-society/medit-sparker-plugin)를 따릅니다.
