@@ -77,3 +77,9 @@ PDF를 만들 때는 Chrome 또는 Edge가 필요합니다. 브라우저가 없�
 이 안내는 Discovery 0.7.0과 Camp 0.2.0의 참가자 흐름입니다. 기획서·제출 파일·동의한 진행 정보는 자신의 실습 폴더에 저장됩니다. 회사 계정 설정이나 외부 업로드를 실습 시작만으로 바꾸지 않습니다.
 
 필요한 기능만 직접 실행할 수도 있습니다: `/sparker-discovery:plan`, `/sparker-discovery:submit`, `/sparker-discovery:week1`. 설치·업데이트 명령은 [공통 안내](https://github.com/delta-society/medit-sparker-plugin#업데이트)에서 확인하세요.
+
+## 0.12.0 — 3주차 PDF 직접 제출
+
+`/sparker-discovery:week3-submit` 또는 3주차 맥락의 `/sparker-discovery:submit`은 최신 검토 완료 평가 PDF만 제출합니다. 최초 한 번만 기존 웹 로그인 후 **터미널 연결에 동의하고 제출**을 누릅니다. 이후 30일 연결 유효기간 동안 다른 PDF·리비전·case도 터미널 제출 요청만으로 웹 확인 없이 전송하고 서버 receipt를 재조회합니다. 제출 전용 기기 인증은 프로젝트 밖 `~/.config/sparker-report/`에 0600으로 보관하며 `submission_bridge.py --logout`으로 서버 연결을 해제합니다. 만료/해제된 인증은 제출을 차단하며 재연결이 필요합니다. 코드·원문·Camp 토큰은 전송하지 않으며 보고서 확정과 전송 동의는 별개입니다. timeout은 접수 완료가 아닙니다. 같은 명령으로 재개하면 동일 intent를 조회합니다.
+
+업데이트 후 Claude Code에서 `/reload-plugins`를 실행하세요. 명령이 보이지 않으면 세션을 다시 시작하고 0.12.0 로드를 확인하세요. ZIP을 사용한다면 새 ZIP을 고정 디렉터리에 풀어 `claude --plugin-dir <directory>`로 다시 로드하세요. 구 0.11 PDF는 SHA receipt가 없어 같은 confirmed 기록으로 `evaluation.py --root <root> --case <case> pdf --refresh` 재출력이 필요합니다(재평가/재로그인 요구 아님).

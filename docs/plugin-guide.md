@@ -91,3 +91,9 @@ PDF를 만들 때는 Chrome 또는 Edge가 필요합니다. 브라우저가 없�
 - 기존 `/sparker-discovery:submit`과 “제출 준비해줘”는 확인된 주차를 재사용합니다. 주차가 불명확하면 한 번 묻고, 임의로 1주차를 고르지 않습니다.
 
 모두 로컬 파일 준비이며 자동 업로드하지 않습니다. 이 변경은 **Discovery 0.8.0 검토 후보**로, 원격 출시·참가자 배포 완료를 뜻하지 않습니다.
+
+## 0.12.0 — 3주차 PDF 직접 제출
+
+`/sparker-discovery:week3-submit` 또는 3주차 맥락의 `/sparker-discovery:submit`은 최신 검토 완료 평가 PDF만 제출합니다. 최초 한 번만 기존 웹 로그인 후 **터미널 연결에 동의하고 제출**을 누릅니다. 이후 30일 연결 유효기간 동안 다른 PDF·리비전·case도 터미널 제출 요청만으로 웹 확인 없이 전송하고 서버 receipt를 재조회합니다. 제출 전용 기기 인증은 프로젝트 밖 `~/.config/sparker-report/`에 0600으로 보관하며 `submission_bridge.py --logout`으로 서버 연결을 해제합니다. 만료/해제된 인증은 제출을 차단하며 재연결이 필요합니다. 코드·원문·Camp 토큰은 전송하지 않으며 보고서 확정과 전송 동의는 별개입니다. timeout은 접수 완료가 아닙니다. 같은 명령으로 재개하면 동일 intent를 조회합니다.
+
+업데이트 후 Claude Code에서 `/reload-plugins`를 실행하세요. 명령이 보이지 않으면 세션을 다시 시작하고 0.12.0 로드를 확인하세요. ZIP을 사용한다면 새 ZIP을 고정 디렉터리에 풀어 `claude --plugin-dir <directory>`로 다시 로드하세요. 구 0.11 PDF는 SHA receipt가 없어 같은 confirmed 기록으로 `evaluation.py --root <root> --case <case> pdf --refresh` 재출력이 필요합니다(재평가/재로그인 요구 아님).
