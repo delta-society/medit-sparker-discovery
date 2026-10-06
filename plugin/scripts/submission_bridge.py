@@ -161,7 +161,7 @@ def receipt_check(response, state, base):
 def upload(client, state, data):
     require(isinstance(state.get('metadata'), dict), '승인 파일 metadata 필요')
     name = state['metadata']['filename']
-    require(name in ('evaluation.pdf', 'final-code-and-report.zip'), '지원 파일 이름 오류')
+    require(name in ('week1-plan.zip', 'week2-implementation.zip', 'evaluation.pdf', 'final-code-and-report.zip'), '지원 파일 이름 오류')
     mime = 'application/pdf' if state['metadata']['week'] == 3 else 'application/zip'
     boundary = 'sparker' + uuid.uuid4().hex
     body = ('--' + boundary + '\r\nContent-Disposition: form-data; name="id"\r\n\r\n'
@@ -179,8 +179,8 @@ def config_directory(base):
 
 
 def logout(base, scope=3):
-    require(scope in (3, 4), '제출 scope 오류')
-    path = config_directory(base) / ('device.json' if scope == 3 else 'device-week4.json')
+    require(scope in (1, 2, 3, 4), '제출 scope 오류')
+    path = config_directory(base) / ('device.json' if scope == 3 else 'device-week%d.json' % scope)
     if path.exists():
         Client(base).request('revoke', {}, evaluation.read(path)['token'])
         path.unlink()
@@ -194,11 +194,11 @@ def submit(root, *, consent=False, base=PRODUCTION, local_test=False, no_browser
     require(wait >= 0 and interval > 0 and timeout > 0, '대기 설정 오류')
     root = safe_path(root)
     loader = artifact_loader or current_pdf
-    require(scope in (3, 4), '제출 scope 오류')
+    require(scope in (1, 2, 3, 4), '제출 scope 오류')
     r, data, metadata = loader(root)
     require(metadata['week'] == scope, '파일/권한 scope 불일치')
     directory = config_directory(base)
-    credential_path = directory / ('device.json' if scope == 3 else 'device-week4.json')
+    credential_path = directory / ('device.json' if scope == 3 else 'device-week%d.json' % scope)
     credential = evaluation.read(credential_path) if credential_path.exists() else {}
     key = hashlib.sha256((str(root) + ':' + str(r['revision']) + ':' + metadata['sha256']).encode()).hexdigest()
     state_path = safe_path(directory / (key + '.json'))
@@ -292,7 +292,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', default='.sparker-evaluation')
     p.add_argument('--case', default='my-product')
-    p.add_argument('--scope', type=int, choices=(3, 4), default=3, help='해제할 제출 주차')
+    p.add_argument('--scope', type=int, choices=(1, 2, 3, 4), default=3, help='해제할 제출 주차')
     p.add_argument('--logout', action='store_true', help='제출 전용 터미널 연결 해제')
     p.add_argument('--submit', action='store_true', help='사용자가 외부 제출을 요청한 경우에만 지정')
     p.add_argument('--origin', default=PRODUCTION)
