@@ -78,12 +78,12 @@ bundle --root <case>
 
 Chrome/Edge를 쓰는 기존 오프라인 PDF renderer 재사용. 한 페이지 높이/폭을 넘으면 축소·잘라내기 대신 중요한 내용을 보존해 요약하고 `final → confirm`을 다시 한다. 최종 ZIP은 `code/<명시 소스>`, `report.pdf`, `manifest.json`만 포함. manifest의 week=4, 소스별 SHA256, 코드 집합 digest, PDF SHA, record digest로 정합을 연결한다. 변경 후 옛 PDF/ZIP을 제출할 수 없다.
 
-현재 `submit`은 loopback `--local-test` 전용. 운영 미배포이므로 사용자의 제출 요청만으로 production 권한을 확대하지 않는다. 기존 브리지의 중복 방지/접수 재조회/재연결을 재사용한다. 서버 W3 장기 연결은 DB migration의 week=3 기본값을 유지하고 W4는 새 명시 동의로 별도 발급한다.
+`submit --root <case> --submit`은 최신 확정 ZIP을 운영 서버의 4주차에 전송하고 접수를 재조회한다. 최초에는 본인 로그인·4주차 연결 동의를 받으며, 유효한 연결은 터미널에서 재사용한다. 기존 브리지의 중복 방지/접수 재조회/재연결을 유지한다. W3 장기 연결은 week=3 그대로 보존하고 W4는 별도 발급한다. 격리 시험만 loopback origin과 `--local-test`를 사용한다.
 
 ## 재현 시험
 
 - `python3 -m unittest discover -s plugin/tests -p 'test_week4.py' -v`
 - `python3 scripts/week4-smoke.py --output <새 절대 폴더>`: 합성 제품 실제 수정·전후 실행·Chrome PDF·ZIP 정합. 사람 답은 **합성 시험**으로 표시.
-- 서버 `tests/week4-terminal-integration.py`로 격리 로그인→W4 첫 동의→실제 ZIP 전송→주차별 저장/다운로드 SHA→재실행 중복 방지를 시험한다.
+- `scripts/week4-browser-smoke.py --app <빌드된 격리 앱> --case <week4-smoke의 record> --output <증거 폴더>`로 실제 CLI→격리 로그인→W4 첫 동의→실제 ZIP 전송→주차별 저장/다운로드 SHA→재실행 중복 방지를 시험한다.
 
 이 검사는 실제 모델의 자연어 스킬 호출·개별 참가자 이해·운영 OAuth·실참가자 접수·Windows 실기기 검증을 대체하지 않는다.

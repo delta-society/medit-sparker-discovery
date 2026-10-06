@@ -265,6 +265,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__); p.add_argument('action', choices=['init','principles','review','select','final','confirm','bundle','show','submit'])
     p.add_argument('--root', required=True); p.add_argument('--input'); p.add_argument('--expected'); p.add_argument('--statement')
     p.add_argument('--origin'); p.add_argument('--local-test', action='store_true'); p.add_argument('--submit', action='store_true')
+    p.add_argument('--no-browser', action='store_true'); p.add_argument('--wait', type=float, default=120)
     a = p.parse_args(); root = safe_path(Path(a.root).absolute())
     if a.action == 'init': result = initialize(root, read(a.input))
     elif a.action == 'principles': result = confirm_principles(root, a.expected, a.statement)
@@ -275,9 +276,10 @@ def main():
     elif a.action == 'bundle': result = bundle(root)
     elif a.action == 'submit':
         import submission_bridge as bridge
-        require(a.local_test and a.origin and a.origin != bridge.PRODUCTION, 'W4 서버/권한 확장은 미배포: 현재는 격리 로컬 시험만 허용')
-        result = bridge.submit(root, consent=a.submit, base=a.origin, local_test=True, artifact_loader=current_bundle, scope=4)
-        if result['status'] == 'expired': result = bridge.submit(root, consent=a.submit, base=a.origin, local_test=True, artifact_loader=current_bundle, scope=4)
+        options = dict(consent=a.submit, base=a.origin or bridge.PRODUCTION, local_test=a.local_test,
+                       artifact_loader=current_bundle, scope=4, no_browser=a.no_browser, wait=a.wait)
+        result = bridge.submit(root, **options)
+        if result['status'] == 'expired': result = bridge.submit(root, **options)
     else: result = load(root)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if a.action != 'submit' or result['status'] == 'submitted' else 2
