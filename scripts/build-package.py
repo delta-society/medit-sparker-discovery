@@ -12,6 +12,8 @@ PLUGIN_FILES = (
     'skills/week3/SKILL.md', 'references/week3-guide.md', 'references/week3-connectors.md',
     'references/week3-records.md', 'scripts/week3.py', 'scripts/evaluation.py',
     'skills/week3-submit/SKILL.md', 'scripts/submission_bridge.py',
+    'skills/week4/SKILL.md', 'skills/week4-submit/SKILL.md',
+    'references/week4-guide.md', 'scripts/week4.py',
     'references/week1-experience.md', 'references/learning-progress.md',
     'references/conversation.md', 'references/data-contract.md',
     'references/implementation-example.md', 'references/objective-linkage.md',
