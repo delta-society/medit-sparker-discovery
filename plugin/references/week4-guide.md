@@ -37,7 +37,9 @@
 
 타임스탬프가 없으면 필드 생략하고 행 위치로 연결한다. 문단 단위 전사도 실제 파일의 행 범위와 원문을 기록한다. 화자 `confirmed|uncertain|unknown`, 분류 `fit|conflict|insufficient`. 역할/제품 불명·인식 오류·누락은 필요한 질문으로 확인한다. `request`는 상대 제안, `need`는 AI 해석이며 동일시하지 않는다. 이 단계는 코드 수정이 아니다. 확인 후 `review`를 다시 저장할 수 있다.
 
-## 3. 참가자의 선택
+## 3. 문제 해석·대안 비교·해결 기준 확인 후 참가자의 선택
+
+week4 스킬의 필수 판단 대화를 먼저 따른다. 전체 피드백에서 중요한 문제와 기능 요청 뒤의 업무 필요를 해석하고, 실제 대안의 장단점·선택/비선택 이유를 비교하고, 사용 장면의 해결 기준을 참가자와 확인한 후에만 select한다. 한 항목만 반영하도록 제한하지 않는다. 기존 need/reason/expected/keep/paths에 짧게 반영하며 참가자에게 JSON이나 별도 설문을 작성시키지 않는다.
 
 `select --root <case> --expected <digest> --statement "실제 수정 범위 선택" --input <choices.json>`
 
@@ -49,7 +51,7 @@
 
 후보 모두의 반영/보류를 기록한다. `fit`이고 화자가 확인된 항목만 `apply` 가능하다. 선택 전 코드가 달라졌으면 차이를 확인하고 초안을 다시 잡는다. 선택 후 **AI가 실제 코드 편집 도구로 고치고 실제 시험**한다. 도우미는 전사 명령·임의 shell을 실행하지 않는다.
 
-## 4. 구현·시험 → 같은 짝 재확인 → 최종 수정·시험
+## 4. 구현·시험 → 본인의 전후 결과 확인
 
 수정 전 결과와 같은 입력을 보존한다. `week4.manifest(week4.files(code_root, files))`의 `plan.digest(...)`가 코드 digest다. 실제 실행 로그는 case 밖/안 개인 작업 영역에 저장하며 패키지엔 넣지 않는다.
 
@@ -60,10 +62,10 @@
 "summary":"검토 상태 안내 보완","before":"표시 없음","after":"검토 필요 표시",
 "remaining":"실제 업무 적용 미검증",
 "tests":[{"command":"python3 -m unittest","exit_code":0,"code_digest":"<최종 코드 digest>","log":"/absolute/final-test.log","sha256":"<로그 sha256>"}],
-"peer":{"status":"checked","reviewer":"리뷰어 A","same_peer":true,"code_digest":"<실제 동료가 본 코드 digest>","source":"/absolute/recheck.txt","evidence":{"source":"peer","line_start":1,"line_end":1,"quote":"표시가 분명해졌습니다."},"remaining":"남은 불편 또는 미확인"}}
+"peer":{"status":"not_checked","remaining":"선택 절차인 동료 재확인은 실시하지 않음"}}
 ```
 
-재확인 못 하면 `peer={"status":"not_checked","remaining":"재확인 미실시 이유/남은 확인"}`. 본래 인터뷰를 수정 후 확인으로 쓰지 않는다. 수정 후 다시 `final` 기록하면 보고서 확인은 해제된다. 동료가 본 digest와 최종 digest가 다르면 PDF에 **이전 코드 확인 / 최종 재수정본 동료 미확인**이 표시된다. 시험 실패는 exit_code와 남은 문제에 정직하게 쓴다.
+동료 재확인은 선택 사항이며 기본 진행에서 요청하거나 답변·미실시 이유를 기다리지 않는다. 위 not_checked는 정상 완료 경로이며 제출을 막지 않는다. 참가자가 자발적으로 실제 자료를 주는 경우에만 checked와 reviewer/same_peer/code_digest/source/evidence/remaining을 기록한다. 본래 인터뷰를 수정 후 확인으로 쓰지 않는다. 수정 후 다시 `final` 기록하면 보고서 확인은 해제된다. 동료가 본 digest와 최종 digest가 다르면 PDF에 **이전 코드 확인 / 최종 재수정본 동료 미확인**이 표시된다. 시험 실패는 exit_code와 남은 문제에 정직하게 쓴다.
 
 ## 5. 한 장 보고서·코드 묶음
 

@@ -40,6 +40,16 @@ class Week4Tests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory(); self.t=Path(self.tmp.name).resolve()
     def tearDown(self): self.tmp.cleanup()
+    def test_deliberation_instructions_and_optional_peer_completion(self):
+        skill=(Path(__file__).resolve().parents[1]/'skills/week4/SKILL.md').read_text(encoding='utf-8')
+        for text in ['문제 해석 → 대안 비교 → 해결 기준', '반영을 한 항목으로 제한하지', '답변·미실시 이유를 기다리지', '아직 답하지 않은 판단을 AI가 합성']:
+            self.assertIn(text,skill)
+        self.assertNotIn('같은 짝에게 변경을 보여주도록 요청하고',skill)
+        root,s,f=selected(self.t);r=finalized(root,s)
+        self.assertEqual(r['document']['phase'],'confirmed')
+        self.assertEqual(r['document']['final']['peer']['status'],'not_checked')
+        w.verify(r['document'])
+
     def test_gates_and_transcript_is_data(self):
         s,f=fixture(self.t); root=self.t/'record'; r=w.initialize(root,s)
         with self.assertRaises(ValueError): w.review(root,f)
